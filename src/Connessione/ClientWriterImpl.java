@@ -1,0 +1,37 @@
+package Connessione;
+
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
+public class ClientWriterImpl implements ClientWriter {
+
+    private final Map<SocketChannel, ByteBuffer> pendingData;
+
+    public ClientWriterImpl(Map<SocketChannel, ByteBuffer> pendingData) {
+        this.pendingData = pendingData;
+    }
+
+    @Override
+    public synchronized void  writeToClient(SocketChannel client, String message) throws IOException {
+        byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
+        ByteBuffer buffer = ByteBuffer.allocate(4 + messageBytes.length);
+        buffer.putInt(messageBytes.length); // Prefisso con la lunghezza del messaggio
+        buffer.put(messageBytes); // Aggiungi il messaggio
+        buffer.flip(); // Prepara il buffer per la scrittura
+
+        int bytesWritten = client.write(buffer);
+        if (buffer.hasRemaining()) {
+            // Se non è stato possibile scrivere tutti i dati, memorizzali in pendingData
+            pendingData.put(client, buffer);
+
+            // Registra il canale per l'operazione di scrittura
+            SelectionKey key = client.keyFor(client.provider().openSelector());
+            key.interestOps(SelectionKey.OP_WRITE | key.interestOps());
+        }
+    }
+}
