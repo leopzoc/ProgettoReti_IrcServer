@@ -1,1 +1,6 @@
+4a992846-1fd5-4cdd-b0c7-16d4cdadb59f:user:password:active:user
+52a9f4bb-56a7-4406-aded-fbed3f149308:gio:pizzi:active:user
+e5854a88-2194-475f-a550-4ab9ec193b91:leo:4321:active:user
+d79d8c62-c798-48c4-ab07-79e719f34767:leo:1234:active:user
+35de33e4-c878-4b3d-9657-971bb204db0b:leo:12345:active:user
 8224d5b0-a5be-48cd-8d26-ddc45af03db6:admin:admin:active:admin

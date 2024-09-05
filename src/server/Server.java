@@ -131,7 +131,7 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
             try {
                 // Configurazione del server
                 Map<String, Set<SocketChannel>> channels = new ConcurrentHashMap<>();
-                Configurazione configurazione = new Configurazione(channels, "localhost", 5000);
+                Configurazione configurazione = new Configurazione(channels, "", 0);
 
                 // Inizializza GestoreUtenti qui
                 GestoreUtenti gestoreUtenti = new GestoreUtenti("users.txt");

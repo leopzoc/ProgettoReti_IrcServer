@@ -17,10 +17,13 @@ public class SimpleIrcClient {
     private JFrame frame;
     private JTextField ipField;
     private JTextField portField;
+    private JTextField nickField;  // Aggiunto campo per nickname
+    private JPasswordField passwordField;  // Aggiunto campo per password
     private JTextArea messageArea;
     private JTextField inputField;
     private JButton connectButton;
     private JButton sendButton;
+
 
     private Socket socket;
     private DataOutputStream out;
@@ -33,31 +36,39 @@ public class SimpleIrcClient {
     public SimpleIrcClient() {
         frame = new JFrame("Simple IRC Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+        frame.setSize(400, 400);  // Aumentato un po' l'altezza della finestra
         frame.setLayout(new BorderLayout());
 
-        // Top panel for IP and port input
+        // Top panel per IP, porta, nickname e password
         JPanel topPanel = new JPanel();
-        topPanel.setLayout(new FlowLayout());
+        topPanel.setLayout(new GridLayout(3, 2));  // Disposizione a griglia 3x2
+
         ipField = new JTextField("127.0.0.1", 10);
         portField = new JTextField("5000", 5);
+        nickField = new JTextField("nickname", 10);  // Campo per nickname
+        passwordField = new JPasswordField(10);  // Campo per password
+
         connectButton = new JButton("Connect");
 
         topPanel.add(new JLabel("IP:"));
         topPanel.add(ipField);
         topPanel.add(new JLabel("Port:"));
         topPanel.add(portField);
+        topPanel.add(new JLabel("Nickname:"));  // Etichetta per nickname
+        topPanel.add(nickField);
+        topPanel.add(new JLabel("Password:"));  // Etichetta per password
+        topPanel.add(passwordField);
         topPanel.add(connectButton);
 
         frame.add(topPanel, BorderLayout.NORTH);
 
-        // Center panel for message area
+        // Center panel per visualizzare i messaggi
         messageArea = new JTextArea();
         messageArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(messageArea);
         frame.add(scrollPane, BorderLayout.CENTER);
 
-        // Bottom panel for input field and send button
+        // Bottom panel per input e invio messaggi
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BorderLayout());
         inputField = new JTextField();
@@ -80,6 +91,8 @@ public class SimpleIrcClient {
         public void actionPerformed(ActionEvent e) {
             String ip = ipField.getText();
             int port = Integer.parseInt(portField.getText());
+            String nick = nickField.getText();  // Ottiene il nickname inserito
+            String password = new String(passwordField.getPassword());  // Ottiene la password inserita
 
             try {
                 socket = new Socket();
@@ -90,7 +103,7 @@ public class SimpleIrcClient {
                 messageArea.append("Connected to " + ip + ":" + port + "\n");
 
                 // Invia automaticamente il messaggio di login dopo la connessione
-                String loginJson = createLoginJson("leo", "1234");
+                String loginJson = createLoginJson(nick, password);
                 sendMessage(loginJson);
 
                 // Avvia un thread per ricevere messaggi dal server
@@ -116,6 +129,9 @@ public class SimpleIrcClient {
             return String.format("{\"command\": \"login\", \"nick\": \"%s\", \"password\": \"%s\"}", nick, password);
         }
     }
+
+
+
 
     private class SendButtonListener implements ActionListener {
         @Override
