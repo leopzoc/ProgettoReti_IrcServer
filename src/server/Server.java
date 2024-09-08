@@ -53,9 +53,9 @@ import java.util.concurrent.Executors;
         private final Map<String, Set<SocketChannel>> channels; //StringCanale #gereal -> lista di canali connessi
         private final Map<SocketChannel, User> connectedUsers = new ConcurrentHashMap<>(); // canaleSocket -> utente
         private final Map<SocketChannel, ByteBuffer> pendingData = new ConcurrentHashMap<>(); // socketcanale del utente -> buffer associato
-        private final ExecutorService broadcastExecutor = Executors.newCachedThreadPool();
+        private final ExecutorService broadcastExecutor = Executors.newCachedThreadPool(); // per invio dei messaggi in broadcast
 
-        private final Map<String, Set<String>> bannedUsersByChannel = new ConcurrentHashMap<>();
+        private final Map<String, Set<String>> bannedUsersByChannel = new ConcurrentHashMap<>(); //persone bannate dai canali "stringe" no channelsocket
 
         private final Map<String, Map<String, String>> duplicateUsersMap = new ConcurrentHashMap<>();//mappa nick -> (ID univoco : id temporaneo)
         /*
@@ -159,10 +159,10 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
                 Map<SocketChannel, ByteBuffer> buffers = new ConcurrentHashMap<>(); // mappa per gestire i ByteBuffer dei client
 
                 while (true) {
-                    if (selector.select() == 0) continue;
+                    if (selector.select() == 0) continue; // conta i client pronti a essere "accettati o trasmettere o essere scritti"
 
                     Set<SelectionKey> selectedKeys = selector.selectedKeys();
-                    List<SelectionKey> selectionKeyList = new ArrayList<>(selectedKeys);
+                    List<SelectionKey> selectionKeyList = new ArrayList<>(selectedKeys); //una copia del selectedkeys
 
                     for (SelectionKey key : selectionKeyList) {
                         if (key.isAcceptable()) {
@@ -197,13 +197,13 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
         }
 
         private void scrivoAlClient(SelectionKey key) throws IOException {
-            SocketChannel client = (SocketChannel) key.channel();
-            ByteBuffer buffer = pendingData.get(client);
+            SocketChannel client = (SocketChannel) key.channel(); //client dove scrivere
+            ByteBuffer buffer = pendingData.get(client); //ci prendiamo i dati pendenti
 
-            if (buffer != null) {
-                client.write(buffer);
+            if (buffer != null) { //se non è nullo
+                client.write(buffer); //scrivi
 
-                if (!buffer.hasRemaining()) {
+                if (!buffer.hasRemaining()) { //se il buffer non ha cose rimanenti togli il client dalla pendingdata
                     pendingData.remove(client);  // Rimuovi il buffer se tutti i dati sono stati inviati
                     key.interestOps(SelectionKey.OP_READ);  // Torna a leggere solo
                 }

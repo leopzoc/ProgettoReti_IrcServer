@@ -210,9 +210,9 @@ public class SimpleIrcClient {
                     return String.format("{\"command\": \"%s\", \"message\": \"%s\"}", command, recipientWithTempId);
                 }
 
-            } else if (message.startsWith("/switchchannel")) {
+            } else if (message.startsWith("/join")) {
                 command = "switch_channel";
-                String content = message.substring(14).trim();
+                String content = message.substring(5).trim();
                 return String.format("{\"command\": \"%s\", \"message\": \"%s\"}", command, content);
 
             } else if (message.startsWith("/msg")) {

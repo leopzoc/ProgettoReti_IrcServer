@@ -34,26 +34,26 @@ public class GestioneLetturaClient implements IGestoreLetturaClient {
 
     @Override
     public void leggoClient(SelectionKey key, Map<SocketChannel, ByteBuffer> buffers) throws IOException {
-        SocketChannel client = (SocketChannel) key.channel();
-        if (!client.isOpen()) {
+        SocketChannel client = (SocketChannel) key.channel(); //ci prendiamo il client che vuole trasmettere
+        if (!client.isOpen()) { //se il client è chiuso ritorna
             return;  // Esci se il canale è già chiuso
         }
 
-        ByteBuffer buffer = buffers.get(client);
-        if (buffer == null) {
+        ByteBuffer buffer = buffers.get(client); //prendiamo dalla map il buffer fatto in GestioneAccettazione se non ce lo creiamo
+        if (buffer == null) {// fatto per sicurezza
             buffer = ByteBuffer.allocate(1024);
             buffers.put(client, buffer);
         }
 
         try {
-            int bytesRead = client.read(buffer);
-            if (bytesRead == -1) {
-                gestoreDisconnesioneClient.handleClientDisconnection(client);
+            int bytesRead = client.read(buffer); //leggiamo cio che ci ha inviato il client
+            if (bytesRead == -1) { //si sconnette
+                gestoreDisconnesioneClient.handleClientDisconnection(client); // disconnettiamo se non ci ha inviato nulla
             } else if (bytesRead > 0) {
-                buffer.flip();
-                while (buffer.remaining() >= Integer.BYTES) {
-                    buffer.mark();
-                    int messageLength = buffer.getInt();
+                buffer.flip(); //serve per leggere il buffer lo impostiamo in lettura
+                while (buffer.remaining() >= Integer.BYTES) { //4 byte di grandezza del json messi prima del json stesso
+                    buffer.mark(); //marchiamo il punto da dove leggere il json
+                    int messageLength = buffer.getInt(); //ci prendiamo i primi 4 byte (grandezza json)
 
                     if (buffer.remaining() < messageLength) {
                         buffer.reset();

@@ -24,14 +24,14 @@ public class ClientWriterImpl implements ClientWriter {
         buffer.put(messageBytes); // Aggiungi il messaggio
         buffer.flip(); // Prepara il buffer per la scrittura
 
-        int bytesWritten = client.write(buffer);
-        if (buffer.hasRemaining()) {
+        int bytesWritten = client.write(buffer); //per vedere quanti byte ho scritto, al momento non serve e stato utilizzato per il debug
+        if (buffer.hasRemaining()) { //non riesco a inviare tutto perchè sto usando delle socket non bloccati
             // Se non è stato possibile scrivere tutti i dati, memorizzali in pendingData
             pendingData.put(client, buffer);
 
             // Registra il canale per l'operazione di scrittura
             SelectionKey key = client.keyFor(client.provider().openSelector());
-            key.interestOps(SelectionKey.OP_WRITE | key.interestOps());
+            key.interestOps(SelectionKey.OP_WRITE | key.interestOps()); //e pronto per essere scritto ma quello che gia ho registrato come maschera non la togliere "interestOps"
         }
     }
 }

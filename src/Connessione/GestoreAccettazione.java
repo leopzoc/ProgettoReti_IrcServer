@@ -13,8 +13,8 @@ public class GestoreAccettazione implements IGestoreAccettazione {
 
     @Override
     public void Accettazione(SelectionKey key, Selector selector, Map<SocketChannel, ByteBuffer> buffers) throws IOException {
-        ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
-        SocketChannel client = serverChannel.accept();
+        ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel(); // ci serve solo per salvare la key
+        SocketChannel client = serverChannel.accept(); //accettiamo la connessione del client e abbiamo un oggetto SocketChannel
         client.configureBlocking(false);
         client.register(selector, SelectionKey.OP_READ);
         buffers.put(client, ByteBuffer.allocate(1024)); // Inizializza un buffer per il nuovo client
