@@ -193,6 +193,78 @@ Il server permette di gestire:
 - **Collisioni di nomi**: impedisce che due utenti con lo stesso nome si connettano contemporaneamente.
 - **Messaggi privati**: due utenti possono scambiarsi messaggi diretti con l'uso del tempid.
 
+### Messaggi che invia il server ai client
+
+#### Gestore login
+In questo gestore di login, il sistema invia diversi messaggi ai client tramite il metodo clientWriter.writeToClient(). Ecco i vari messaggi che il gestore invia, in base a diverse situazioni durante la gestione del login:
+
+Login riuscito:
+
+Se l'utente è autenticato con successo:
+
+"Login successful. Welcome, " + nick
+Questo messaggio conferma il login con successo e dà il benvenuto all'utente con il suo nickname.
+Utente già connesso:
+
+Se l'utente tenta di connettersi nuovamente mentre è già connesso:
+
+"User is already connected."
+Questo messaggio notifica al client che l'utente è già connesso al server.
+Utente bannato:
+
+Se l'utente è stato bannato e tenta di connettersi:
+
+"You are banned from this server."
+Questo avverte il client che l'utente non può connettersi perché è stato bannato.
+Registrazione riuscita:
+
+Se il nickname non è già presente nel sistema e viene creato un nuovo utente:
+
+"Registration successful. Welcome, " + nick
+Questo messaggio informa il client che la registrazione è avvenuta con successo e dà il benvenuto al nuovo utente.
+Assegnazione a un canale:
+
+Dopo il login o la registrazione, l'utente viene assegnato a un canale:
+
+"You have been assigned to channel: " + firstChannel
+
+Questo messaggio notifica l'utente del canale a cui è stato assegnato.
+Inoltre, il sistema potrebbe inviare ulteriori messaggi se vengono implementati nuovi comportamenti, ma questi sono i principali messaggi che il gestore invia attualmente.
+
+
+
+
+#### Gestore broadcastMessage
+
+
+Situazioni in cui vengono inviati messaggi
+Messaggio di broadcast: Quando un utente invia un messaggio, questo viene trasmesso a tutti gli altri utenti nel suo stesso canale (eccetto il mittente). Il messaggio che viene inviato è strutturato in JSON come segue:
+
+```json
+
+{
+    "sender": "nome_utente",
+    "message": "questo è il messaggio"
+}
+```
+sender: Questo è il nickname del mittente del messaggio. Se il mittente ha un ID temporaneo (in caso di nickname duplicato), l'ID temporaneo viene aggiunto tra parentesi al nickname, ad esempio: "sender": "utente(00001)".
+message: Questo è il contenuto del messaggio inviato dall'utente.
+Gestione degli ID temporanei: Se l'utente mittente ha un nickname duplicato, viene assegnato un ID temporaneo (come 00001, 00002, ecc.). In tal caso, il nickname dell'utente sarà formattato come:
+
+```json
+
+"sender": "nome_utente(00001)"
+```
+Processo di invio
+Il gestore recupera il canale a cui appartiene l'utente che invia il messaggio e ottiene tutti i client (socket) connessi a quel canale.
+Per ogni client nel canale, escluso il mittente, viene inviato il messaggio in formato JSON.
+Se il canale non è trovato o l'utente mittente non è in un canale, vengono stampati messaggi di errore, ma non viene inviato nulla ai client.
+
+
+
+
+
+
 ### Client di prova
 
 Nel progetto sono inclusi **due semplici client** per testare il funzionamento del server. I client possono inviare comandi al server e ricevere le risposte JSON formattate. I client sono utilizzati per verificare le funzionalità di connessione, invio messaggi e amministrazione.
