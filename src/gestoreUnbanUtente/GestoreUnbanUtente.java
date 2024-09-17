@@ -39,14 +39,20 @@ public class GestoreUnbanUtente implements IGestoreUnbanUtente{
             // Trova l'utente bannato usando il nick e il tempID
             User userDaSbannare = trovaUtente(nickDestinatario, tempId);
             if (userDaSbannare == null) {
-                clientWriter.writeToClient(mittente, "Utente non trovato o non bannato.");
+                JsonObject errorMessage = new JsonObject();
+                errorMessage.addProperty("status", "error");
+                errorMessage.addProperty("message", "Utente non trovato o non bannato.");
+                clientWriter.writeToClient(mittente, errorMessage.toString());
                 return;
             }
 
             // Verifica se l'utente è bannato nel canale specificato
             Set<String> bannedUsersInChannel = bannedUsersByChannel.get(canaleDaSbannare);
             if (bannedUsersInChannel == null || !bannedUsersInChannel.contains(userDaSbannare.getID())) {
-                clientWriter.writeToClient(mittente, "Utente non è stato bannato dal canale.");
+                JsonObject errorMessage = new JsonObject();
+                errorMessage.addProperty("status", "error");
+                errorMessage.addProperty("message", "Utente non è stato bannato dal canale.");
+                clientWriter.writeToClient(mittente, errorMessage.toString());
                 return;
             }
 
@@ -59,16 +65,30 @@ public class GestoreUnbanUtente implements IGestoreUnbanUtente{
             }
 
             // Notifica al mittente che l'utente è stato sbannato con successo
-            clientWriter.writeToClient(mittente, "Utente sbannato con successo dal canale " + canaleDaSbannare);
+            JsonObject successMessage = new JsonObject();
+            successMessage.addProperty("status", "success");
+            successMessage.addProperty("message", "Utente sbannato con successo dal canale " + canaleDaSbannare);
+            clientWriter.writeToClient(mittente, successMessage.toString());
 
             // Notifica all'utente sbannato
-            clientWriter.writeToClient(userDaSbannare.getSocketChannel(), "Sei stato sbannato dal canale " + canaleDaSbannare);
+            JsonObject unbanMessage = new JsonObject();
+            unbanMessage.addProperty("status", "unbanned");
+            unbanMessage.addProperty("message", "Sei stato sbannato dal canale " + canaleDaSbannare);
+            clientWriter.writeToClient(userDaSbannare.getSocketChannel(), unbanMessage.toString());
 
         } catch (Exception e) {
             System.err.println("Errore durante l'unban dell'utente: " + e.getMessage());
+            // Invia un messaggio di errore in formato JSON in caso di eccezione
+            JsonObject errorMessage = new JsonObject();
+            errorMessage.addProperty("status", "error");
+            errorMessage.addProperty("message", "Errore durante l'unban dell'utente.");
+            try {
+                clientWriter.writeToClient(mittente, errorMessage.toString());
+            } catch (IOException ioException) {
+                System.err.println("Errore durante l'invio del messaggio di errore: " + ioException.getMessage());
+            }
         }
     }
-
 
     // Metodo per trovare l'utente bannato
     private User trovaUtente(String nick, String tempId) {
@@ -93,4 +113,45 @@ public class GestoreUnbanUtente implements IGestoreUnbanUtente{
     "message": "leo:00001",
     "channel": "nome_canale"
 }
+ */
+
+
+
+/* dal server
+
+
+Modifiche principali:
+Messaggi di errore in formato JSON:
+
+Se l'utente non viene trovato o non è bannato, viene inviato un messaggio di errore in formato JSON:
+json
+
+{
+  "status": "error",
+  "message": "Utente non trovato o non bannato."
+}
+Se l'utente non è stato bannato nel canale specificato:
+json
+
+{
+  "status": "error",
+  "message": "Utente non è stato bannato dal canale."
+}
+Messaggio di successo per l'unban:
+
+Se l'utente viene sbannato con successo, viene inviato un messaggio di conferma in formato JSON al mittente:
+json
+
+{
+  "status": "success",
+  "message": "Utente sbannato con successo dal canale canaleDaSbannare."
+}
+Notifica all'utente sbannato:
+
+L'utente sbannato riceve una notifica in formato JSON:
+json
+
+{
+  "status": "unbanned",
+  "message": "Sei stato sbannato
  */

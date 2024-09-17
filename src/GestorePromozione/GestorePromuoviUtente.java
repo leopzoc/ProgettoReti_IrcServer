@@ -50,7 +50,11 @@ public class GestorePromuoviUtente {
 
             // Se l'utente non è stato trovato, invia un messaggio di errore
             if (userDaPromuovere == null) {
-                clientWriter.writeToClient(mittente, "Utente non trovato.");
+                JsonObject errorMessage = new JsonObject();
+                errorMessage.addProperty("status", "error");
+                errorMessage.addProperty("message", "Utente non trovato.");
+                clientWriter.writeToClient(mittente, errorMessage.toString());
+
                 return;
             }
 
@@ -63,17 +67,36 @@ public class GestorePromuoviUtente {
 
                 // Se l'utente è connesso, notificalo della promozione
                 if (connectedUsers.containsValue(userDaPromuovere)) {
-                    clientWriter.writeToClient(userDaPromuovere.getSocketChannel(), "Sei stato promosso a admin.");
+                    JsonObject promotionMessage = new JsonObject();
+                    promotionMessage.addProperty("status", "success");
+                    promotionMessage.addProperty("message", "Sei stato promosso a admin.");
+                    clientWriter.writeToClient(userDaPromuovere.getSocketChannel(), promotionMessage.toString());
                 }
 
                 // Notifica l'admin che ha eseguito il comando
-                clientWriter.writeToClient(mittente, "Utente " + userDaPromuovere.getNick() + " è stato promosso a admin.");
+                JsonObject successMessage = new JsonObject();
+                successMessage.addProperty("status", "success");
+                successMessage.addProperty("message", "Utente " + userDaPromuovere.getNick() + " è stato promosso a admin.");
+                clientWriter.writeToClient(mittente, successMessage.toString());
             } else {
-                clientWriter.writeToClient(mittente, "L'utente è già admin.");
+                JsonObject alreadyAdminMessage = new JsonObject();
+                alreadyAdminMessage.addProperty("status", "info");
+                alreadyAdminMessage.addProperty("message", "L'utente è già admin.");
+                clientWriter.writeToClient(mittente, alreadyAdminMessage.toString());
             }
 
         } catch (Exception e) {
             System.err.println("Errore durante la promozione dell'utente: " + e.getMessage());
+
+            // Invia un messaggio di errore in formato JSON in caso di eccezione
+            JsonObject errorMessage = new JsonObject();
+            errorMessage.addProperty("status", "error");
+            errorMessage.addProperty("message", "Errore durante la promozione dell'utente.");
+            try {
+                clientWriter.writeToClient(mittente, errorMessage.toString());
+            } catch (IOException ioException) {
+                System.err.println("Errore durante l'invio del messaggio di errore: " + ioException.getMessage());
+            }
         }
     }
 
@@ -116,6 +139,49 @@ public class GestorePromuoviUtente {
 {
     "command": "promote",
     "uuid": "e0fbc7dc-667b-4292-a836-d8f52c236984"
+}
+
+ */
+
+
+/*
+Messaggi di errore in formato JSON:
+
+Se l'utente non viene trovato, viene inviato un messaggio di errore in formato JSON:
+json
+{
+  "status": "error",
+  "message": "Utente non trovato."
+}
+Messaggio di successo per la promozione:
+
+Se l'utente viene promosso con successo, viene inviato un messaggio di conferma sia all'utente promosso (se connesso) che all'admin che ha eseguito il comando:
+json
+{
+  "status": "success",
+  "message": "Sei stato promosso a admin."
+}
+E per l'admin:
+json
+{
+  "status": "success",
+  "message": "Utente Nickname è stato promosso a admin."
+}
+Messaggio informativo se l'utente è già admin:
+
+Se l'utente è già un admin, viene inviato un messaggio informativo:
+json
+{
+  "status": "info",
+  "message": "L'utente è già admin."
+}
+Gestione delle eccezioni:
+
+In caso di errore o eccezione, viene inviato un messaggio di errore in formato JSON:
+json
+{
+  "status": "error",
+  "message": "Errore durante la promozione dell'utente."
 }
 
  */

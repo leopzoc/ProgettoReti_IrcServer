@@ -42,17 +42,26 @@ public class GestoreFBanUtente {
                 // Trova l'utente da bannare
                 User userDaBannare = trovaUtente(nickDestinatario, tempId);
                 if (userDaBannare == null) {
-                    clientWriter.writeToClient(mittente, "Utente non trovato o più utenti con lo stesso nome.");
+                    JsonObject errorMessage = new JsonObject();
+                    errorMessage.addProperty("status", "error");
+                    errorMessage.addProperty("message", "Utente non trovato o più utenti con lo stesso nome.");
+                    clientWriter.writeToClient(mittente, errorMessage.toString());
                     return;
                 }
 
                 // Aggiorna lo stato nel file 'users.txt' e disconnette l'utente
                 if (aggiornaStatoUtente(userDaBannare.getID())) {
-                    clientWriter.writeToClient(mittente, "Utente bannato definitivamente.");
+                    JsonObject successMessage = new JsonObject();
+                    successMessage.addProperty("status", "success");
+                    successMessage.addProperty("message", "Utente bannato definitivamente.");
+                    clientWriter.writeToClient(mittente, successMessage.toString());
                     // Disconnette l'utente
                     gestoreDisconnesioneClient.handleClientDisconnection(userDaBannare.getSocketChannel());
                 } else {
-                    clientWriter.writeToClient(mittente, "Errore durante il ban dell'utente.");
+                    JsonObject errorMessage = new JsonObject();
+                    errorMessage.addProperty("status", "error");
+                    errorMessage.addProperty("message", "Errore durante il ban dell'utente.");
+                    clientWriter.writeToClient(mittente, errorMessage.toString());
                 }
 
             } else if (jsonMessage.has("uuid")) {
@@ -61,7 +70,10 @@ public class GestoreFBanUtente {
 
                 // Aggiorna lo stato dell'utente
                 if (aggiornaStatoUtente(uuid)) {
-                    clientWriter.writeToClient(mittente, "Utente bannato definitivamente tramite UUID.");
+                    JsonObject successMessage = new JsonObject();
+                    successMessage.addProperty("status", "success");
+                    successMessage.addProperty("message", "Utente bannato definitivamente tramite UUID.");
+                    clientWriter.writeToClient(mittente, successMessage.toString());
 
                     // Controlla se l'utente è online e disconnettilo
                     Optional<User> userDaBannare = connectedUsers.values().stream()
@@ -73,14 +85,29 @@ public class GestoreFBanUtente {
                         gestoreDisconnesioneClient.handleClientDisconnection(userDaBannare.get().getSocketChannel());
                     }
                 } else {
-                    clientWriter.writeToClient(mittente, "Errore durante il ban dell'utente tramite UUID.");
-                }
+                    JsonObject errorMessage = new JsonObject();
+                    errorMessage.addProperty("status", "error");
+                    errorMessage.addProperty("message", "Errore durante il ban dell'utente tramite UUID.");
+                    clientWriter.writeToClient(mittente, errorMessage.toString());                }
             } else {
-                clientWriter.writeToClient(mittente, "Formato del messaggio non valido.");
+                JsonObject errorMessage = new JsonObject();
+                errorMessage.addProperty("status", "error");
+                errorMessage.addProperty("message", "Formato del messaggio non valido.");
+                clientWriter.writeToClient(mittente, errorMessage.toString());
             }
 
-        } catch (Exception e) {
+        }  catch (Exception e) {
             System.err.println("Errore durante il ban definitivo dell'utente: " + e.getMessage());
+
+            // Invia un messaggio di errore in formato JSON in caso di eccezione
+            JsonObject errorMessage = new JsonObject();
+            errorMessage.addProperty("status", "error");
+            errorMessage.addProperty("message", "Errore durante il ban definitivo dell'utente.");
+            try {
+                clientWriter.writeToClient(mittente, errorMessage.toString());
+            } catch (IOException ioException) {
+                System.err.println("Errore durante l'invio del messaggio di errore: " + ioException.getMessage());
+            }
         }
     }
 
@@ -131,6 +158,55 @@ public class GestoreFBanUtente {
 {
     "command": "fban",
     "uuid": "d600b33b-3ca3-44af-85bb-e410efc186fd"
+}
+
+ */
+
+/*
+server:
+Modifiche principali:
+Messaggi di errore in formato JSON:
+
+Se l'utente non viene trovato o c'è un errore, viene inviato un messaggio di errore in formato JSON:
+
+json
+
+{
+  "status": "error",
+  "message": "Utente non trovato o più utenti con lo stesso nome."
+}
+Se c'è un errore durante il ban tramite UUID o tempID:
+
+json
+
+{
+  "status": "error",
+  "message": "Errore durante il ban dell'utente tramite UUID/tempID."
+}
+Messaggi di successo in formato JSON:
+
+Se l'utente viene bannato con successo, viene inviato un messaggio di conferma in formato JSON:
+json
+
+{
+  "status": "success",
+  "message": "Utente bannato definitivamente."
+}
+Se l'utente viene bannato tramite UUID:
+json
+
+{
+  "status": "success",
+  "message": "Utente bannato definitivamente tramite UUID."
+}
+Gestione degli errori:
+
+In caso di eccezione, viene inviato un messaggio di errore generico al mittente in formato JSON:
+json
+
+{
+  "status": "error",
+  "message": "Errore durante il ban definitivo dell'utente."
 }
 
  */

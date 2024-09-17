@@ -60,6 +60,9 @@ public class GestoreLogin implements IGestoreLogin {
                 .findFirst()
                 .orElse(null);
 
+        JsonObject response = new JsonObject(); // Oggetto JSON per la risposta
+
+
         if (matchingUser != null) {
             System.out.println("Utente trovato: " + nick);
 
@@ -69,22 +72,35 @@ public class GestoreLogin implements IGestoreLogin {
 
             if (isAlreadyConnected) {
                 // Gestisci il caso in cui l'utente è già connesso
-                clientWriter.writeToClient(client, "User is already connected.");
+                //clientWriter.writeToClient(client, "User is already connected.");
+                response.addProperty("status", "error");
+                response.addProperty("message", "User is already connected.");
+                clientWriter.writeToClient(client, response.toString());
                 client.close();
                 System.out.println("Tentativo di doppia connessione per utente: " + nick);
             } else if (matchingUser.getStatus().equals("banned")) {
-                clientWriter.writeToClient(client, "You are banned from this server.");
+                //utente bannato
+                response.addProperty("status", "error");
+                response.addProperty("message", "You are banned from this server.");
+                clientWriter.writeToClient(client, response.toString());
+
+                //clientWriter.writeToClient(client, "You are banned from this server.");
                 client.close();
                 System.out.println("Utente bannato: " + nick);
             } else {
+                //login riuscito
                 matchingUser.setSocketChannel(client);
                 assignTempIdIfDuplicate(nick, matchingUser); // ASSEGNA ID TEMPORANEO
                 connectedUsers.put(client, matchingUser);
                 assignToAvailableChannel(matchingUser, client); // Assegna al canale disponibile
-                clientWriter.writeToClient(client, "Login successful. Welcome, " + nick);
+                //clientWriter.writeToClient(client, "Login successful. Welcome, " + nick);
+                response.addProperty("status", "success");
+                response.addProperty("message", "Login successful. Welcome, " + nick);
+                clientWriter.writeToClient(client, response.toString());
                 System.out.println("Login riuscito per utente: " + nick);
             }
         } else {
+            //utente non trovato
             System.out.println("Utente non trovato, creando nuovo utente: " + nick);
             User newUser = new User(nick, password, "active", "user", client);
             assignTempIdIfDuplicate(nick, newUser); // ASSEGNA ID TEMPORANEO
@@ -93,7 +109,10 @@ public class GestoreLogin implements IGestoreLogin {
 
             connectedUsers.put(client, newUser);
             assignToAvailableChannel(newUser, client); // Assegna al canale disponibile
-            clientWriter.writeToClient(client, "Registration successful. Welcome, " + nick);
+           // clientWriter.writeToClient(client, "Registration successful. Welcome, " + nick);
+            response.addProperty("status", "success");
+            response.addProperty("message", "Registration successful. Welcome, " + nick);
+            clientWriter.writeToClient(client, response.toString());
             System.out.println("Registrazione riuscita per utente: " + nick);
         }
     }
@@ -107,7 +126,14 @@ public class GestoreLogin implements IGestoreLogin {
         user.setChannel(firstChannel);
 
         // Notifica al client a quale canale è stato assegnato
-        clientWriter.writeToClient(client, "You have been assigned to channel: " + firstChannel);
+        JsonObject channelResponse = new JsonObject();
+        channelResponse.addProperty("status", "success");
+        channelResponse.addProperty("message", "You have been assigned to channel: " + firstChannel);
+        clientWriter.writeToClient(client, channelResponse.toString());
+
+        //vecchio metodo
+        // Notifica al client a quale canale è stato assegnato
+        //clientWriter.writeToClient(client, "You have been assigned to channel: " + firstChannel);
     }
 
     private void assignTempIdIfDuplicate(String nick, User user) {
@@ -162,6 +188,22 @@ duplicateUsersMap è una mappa che ha come chiavi i nomi degli utenti (nick), e 
 Quindi, se leo ha tempId 00001 e ale ha lo stesso tempId, non ci saranno conflitti, poiché leo e ale sono in mappe separate sotto la duplicateUsersMap.
      */
 
+
+/*
+
+Login riuscito:
+json
+{
+  "status": "success",
+  "message": "Login successful. Welcome, nickname"
+}
+Utente bannato:
+json
+{
+  "status": "error",
+  "message": "You are banned from this server."
+}
+ */
 
 
 

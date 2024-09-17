@@ -220,7 +220,23 @@ public class SimpleIrcClient {
                 String content = message.substring(4).trim();
                 return String.format("{\"command\": \"%s\", \"message\": \"%s\"}", command, content);
 
-            } else if (message.equalsIgnoreCase("/list")) {
+            } else if (message.startsWith("/privmsg")) {
+                command = "privmsg";
+                String[] parts = message.substring(9).trim().split(" ", 2); // Suddivide in "destinatario" e "messaggio"
+
+                if (parts.length == 2) {
+                    String recipient = parts[0].trim();  // Il destinatario del messaggio
+                    String privMessage = parts[1].trim();  // Il contenuto del messaggio
+
+                    // Restituisci il JSON formattato con recipient e message
+                    return String.format("{\"command\": \"%s\", \"recipient\": \"%s\", \"message\": \"%s\"}",
+                            command, recipient, privMessage);
+                } else {
+                    // Se manca il messaggio o il destinatario, restituisci un JSON vuoto o un errore
+                    return "{}";
+                }
+            }
+            else if (message.equalsIgnoreCase("/list")) {
                 command = "list";
                 return String.format("{\"command\": \"%s\"}", command);
 

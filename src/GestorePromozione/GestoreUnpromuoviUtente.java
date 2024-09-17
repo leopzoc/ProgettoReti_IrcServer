@@ -48,7 +48,10 @@ public class GestoreUnpromuoviUtente {
 
             // Se l'utente non è stato trovato, invia un messaggio di errore
             if (userDaUnpromuovere == null) {
-                clientWriter.writeToClient(mittente, "Utente non trovato.");
+                JsonObject errorMessage = new JsonObject();
+                errorMessage.addProperty("status", "error");
+                errorMessage.addProperty("message", "Utente non trovato.");
+                clientWriter.writeToClient(mittente, errorMessage.toString());
                 return;
             }
 
@@ -61,19 +64,39 @@ public class GestoreUnpromuoviUtente {
 
                 // Se l'utente è connesso, notificalo della rimozione dei privilegi
                 if (connectedUsers.containsValue(userDaUnpromuovere)) {
-                    clientWriter.writeToClient(userDaUnpromuovere.getSocketChannel(), "I tuoi privilegi di admin sono stati rimossi.");
+                    JsonObject notifyMessage = new JsonObject();
+                    notifyMessage.addProperty("status", "success");
+                    notifyMessage.addProperty("message", "I tuoi privilegi di admin sono stati rimossi.");
+                    clientWriter.writeToClient(userDaUnpromuovere.getSocketChannel(), notifyMessage.toString());
                 }
 
                 // Notifica l'admin che ha eseguito il comando
-                clientWriter.writeToClient(mittente, "Utente " + userDaUnpromuovere.getNick() + " non è più admin.");
+                JsonObject successMessage = new JsonObject();
+                successMessage.addProperty("status", "success");
+                successMessage.addProperty("message", "Utente " + userDaUnpromuovere.getNick() + " non è più admin.");
+                clientWriter.writeToClient(mittente, successMessage.toString());
             } else {
-                clientWriter.writeToClient(mittente, "L'utente non è admin.");
+                JsonObject infoMessage = new JsonObject();
+                infoMessage.addProperty("status", "info");
+                infoMessage.addProperty("message", "L'utente non è admin.");
+                clientWriter.writeToClient(mittente, infoMessage.toString());
             }
 
         } catch (Exception e) {
             System.err.println("Errore durante la rimozione dei privilegi di admin dell'utente: " + e.getMessage());
+
+            // Invia un messaggio di errore in formato JSON in caso di eccezione
+            JsonObject errorMessage = new JsonObject();
+            errorMessage.addProperty("status", "error");
+            errorMessage.addProperty("message", "Errore durante la rimozione dei privilegi di admin dell'utente.");
+            try {
+                clientWriter.writeToClient(mittente, errorMessage.toString());
+            } catch (IOException ioException) {
+                System.err.println("Errore durante l'invio del messaggio di errore: " + ioException.getMessage());
+            }
         }
     }
+
 
     // Metodo per trovare l'utente tramite UUID
     private User trovaUtenteDaUUID(String uuid) throws IOException {
@@ -114,4 +137,47 @@ public class GestoreUnpromuoviUtente {
     "uuid": "e0fbc7dc-667b-4292-a836-d8f52c236984"
 }
 
+ */
+
+/*
+server
+Messaggi di errore in formato JSON:
+
+Se l'utente non viene trovato, viene inviato un messaggio di errore in formato JSON:
+json
+{
+  "status": "error",
+  "message": "Utente non trovato."
+}
+Messaggio di successo per la rimozione dei privilegi di admin:
+
+Se l'utente viene rimosso dal ruolo di admin, viene inviato un messaggio di conferma sia all'utente rimosso (se connesso) che all'admin che ha eseguito il comando:
+All'utente:
+json
+{
+  "status": "success",
+  "message": "I tuoi privilegi di admin sono stati rimossi."
+}
+All'admin:
+json
+{
+  "status": "success",
+  "message": "Utente Nickname non è più admin."
+}
+Messaggio informativo se l'utente non è admin:
+
+Se l'utente non è già un admin, viene inviato un messaggio informativo:
+json
+{
+  "status": "info",
+  "message": "L'utente non è admin."
+}
+Gestione delle eccezioni:
+
+In caso di errore o eccezione, viene inviato un messaggio di errore in formato JSON:
+json
+{
+  "status": "error",
+  "message": "Errore durante la rimozione dei privilegi di admin dell'utente."
+}
  */

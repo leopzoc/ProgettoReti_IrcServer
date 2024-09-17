@@ -50,7 +50,43 @@ public class GestoreVisualizzaUtentiAdmin {
 
         } catch (IOException e) {
             System.err.println("Errore durante la visualizzazione degli utenti: " + e.getMessage());
+
+            // Invia un messaggio di errore in formato JSON in caso di eccezione
+            JsonObject errorMessage = new JsonObject();
+            errorMessage.addProperty("status", "error");
+            errorMessage.addProperty("message", "Errore durante la visualizzazione degli utenti.");
+            try {
+                clientWriter.writeToClient(mittente, errorMessage.toString());
+            } catch (IOException ioException) {
+                System.err.println("Errore durante l'invio del messaggio di errore: " + ioException.getMessage());
+            }
         }
     }
 }
+/*
+messaggio di risposta
+"users": [
+    {
+      "uuid": "user-id",
+      "nick": "nickname",
+      "status": "active",
+      "connection": "online"
+    },
+    {
+      "uuid": "user-id",
+      "nick": "nickname",
+      "status": "banned",
+      "connection": "offline"
+    }
+  ]
+}
 
+Messaggio di errore in formato JSON:
+
+In caso di errore durante la visualizzazione degli utenti, viene inviato un messaggio di errore in formato JSON:
+json
+{
+  "status": "error",
+  "message": "Errore durante la visualizzazione degli utenti."
+}
+ */

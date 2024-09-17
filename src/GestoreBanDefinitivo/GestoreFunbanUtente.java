@@ -28,13 +28,29 @@ public class GestoreFunbanUtente   {
 
             // Aggiorna lo stato dell'utente nel file 'users.txt' da "banned" a "active"
             if (aggiornaStatoUtente(uuid, "active")) {
-                clientWriter.writeToClient(mittente, "Utente sbannato con successo tramite UUID.");
+                JsonObject successMessage = new JsonObject();
+                successMessage.addProperty("status", "success");
+                successMessage.addProperty("message", "Utente sbannato con successo tramite UUID.");
+                clientWriter.writeToClient(mittente, successMessage.toString());
             } else {
-                clientWriter.writeToClient(mittente, "Errore durante lo sbannamento dell'utente tramite UUID.");
+                JsonObject errorMessage = new JsonObject();
+                errorMessage.addProperty("status", "error");
+                errorMessage.addProperty("message", "Errore durante lo sbannamento dell'utente tramite UUID.");
+                clientWriter.writeToClient(mittente, errorMessage.toString());
             }
 
-        } catch (Exception e) {
+        }catch (Exception e) {
             System.err.println("Errore durante lo sbannamento definitivo dell'utente: " + e.getMessage());
+
+            // Invia un messaggio di errore in formato JSON in caso di eccezione
+            JsonObject errorMessage = new JsonObject();
+            errorMessage.addProperty("status", "error");
+            errorMessage.addProperty("message", "Errore durante lo sbannamento definitivo dell'utente.");
+            try {
+                clientWriter.writeToClient(mittente, errorMessage.toString());
+            } catch (IOException ioException) {
+                System.err.println("Errore durante l'invio del messaggio di errore: " + ioException.getMessage());
+            }
         }
     }
 
@@ -61,3 +77,30 @@ public class GestoreFunbanUtente   {
         return false; // Errore o utente non trovato
     }
 }
+
+/*
+Messaggio di successo in formato JSON:
+
+Se l'utente viene sbannato con successo, viene inviato un messaggio di conferma in formato JSON:
+json
+{
+  "status": "success",
+  "message": "Utente sbannato con successo tramite UUID."
+}
+Messaggio di errore in formato JSON:
+
+Se si verifica un errore durante lo sbannamento dell'utente, viene inviato un messaggio di errore in formato JSON:
+json
+{
+  "status": "error",
+  "message": "Errore durante lo sbannamento dell'utente tramite UUID."
+}
+Gestione delle eccezioni:
+
+In caso di eccezione, viene inviato un messaggio di errore generico al mittente in formato JSON:
+json
+{
+  "status": "error",
+  "message": "Errore durante lo sbannamento definitivo dell'utente."
+}
+ */

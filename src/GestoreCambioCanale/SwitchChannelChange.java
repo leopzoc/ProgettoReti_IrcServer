@@ -2,6 +2,7 @@ package GestoreCambioCanale;
 
 import Connessione.ClientWriter;
 import GestoreIOUser.User;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
@@ -32,8 +33,12 @@ public class SwitchChannelChange implements ISwitchChannelChange {
             // Verifica se l'utente è bannato dal canale di destinazione
             Set<String> bannedUsers = bannedUsersByChannel.get(channelName);
             if (bannedUsers != null && bannedUsers.contains(user.getID())) {
-                // L'utente è bannato, invia un messaggio di errore
-                clientWriter.writeToClient(client, "Non puoi unirti al canale " + channelName + " perché sei stato bannato.");
+                // L'utente è bannato, invia un messaggio di errore in formato JSON
+                JsonObject response = new JsonObject();
+                response.addProperty("status", "error");
+                response.addProperty("message", "Non puoi unirti al canale " + channelName + " perché sei stato bannato.");
+                clientWriter.writeToClient(client, response.toString());
+
                 System.out.println("User " + user.getNick() + " tried to join a banned channel: " + channelName);
                 return;
             }
@@ -49,7 +54,33 @@ public class SwitchChannelChange implements ISwitchChannelChange {
             channels.computeIfAbsent(channelName, k -> ConcurrentHashMap.newKeySet()).add(client);
 
             System.out.println("User " + user.getNick() + " switched to channel: " + channelName);
-            clientWriter.writeToClient(client, "You have joined " + channelName);
+
+            // Invia messaggio di conferma in formato JSON
+            JsonObject response = new JsonObject();
+            response.addProperty("status", "success");
+            response.addProperty("message", "You have joined " + channelName);
+            clientWriter.writeToClient(client, response.toString());
         }
     }
 }
+
+
+/*
+Modifiche principali:
+Messaggi in formato JSON:
+
+Se l'utente è bannato dal canale di destinazione, viene inviato un messaggio di errore con un oggetto JSON:
+json
+
+{
+  "status": "error",
+  "message": "Non puoi unirti al canale channelName perché sei stato bannato."
+}
+Se l'utente riesce a cambiare canale, viene inviato un messaggio di conferma in formato JSON:
+json
+
+{
+  "status": "success",
+  "message": "You have joined channelName."
+}
+ */

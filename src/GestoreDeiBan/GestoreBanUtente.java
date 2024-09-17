@@ -40,7 +40,10 @@ public class GestoreBanUtente implements IBanUtenti{
 
             // Non permettere il ban nel canale lobby
             if (canaleDaBannare.equals(lobbyChannel)) {
-                clientWriter.writeToClient(mittente, "Non puoi bannare utenti nella lobby.");
+                JsonObject errorMessage = new JsonObject();
+                errorMessage.addProperty("status", "error");
+                errorMessage.addProperty("message", "Non puoi bannare utenti nella lobby.");
+                clientWriter.writeToClient(mittente, errorMessage.toString());
                 return;
             }
 
@@ -52,7 +55,10 @@ public class GestoreBanUtente implements IBanUtenti{
             // Trova l'utente da bannare usando il nick e il tempID
             User userDaBannare = trovaUtente(nickDestinatario, tempId);
             if (userDaBannare == null) {
-                clientWriter.writeToClient(mittente, "Utente non trovato o più utenti con lo stesso nome.");
+                JsonObject errorMessage = new JsonObject();
+                errorMessage.addProperty("status", "error");
+                errorMessage.addProperty("message", "Utente non trovato o più utenti con lo stesso nome.");
+                clientWriter.writeToClient(mittente, errorMessage.toString());
                 return;
             }
 
@@ -72,9 +78,18 @@ public class GestoreBanUtente implements IBanUtenti{
             userDaBannare.setChannel(lobby);
 
             // Notifica l'utente bannato (se connesso) e chi lo ha bannato
-            clientWriter.writeToClient(userDaBannare.getSocketChannel(), "Sei stato bannato dal canale " + canaleDaBannare + " e sei stato spostato nella lobby.");
-            clientWriter.writeToClient(mittente, "Utente bannato con successo dal canale " + canaleDaBannare);
+            // Notifica l'utente bannato (se connesso) in formato JSON
+            JsonObject banMessage = new JsonObject();
+            banMessage.addProperty("status", "banned");
+            banMessage.addProperty("message", "Sei stato bannato dal canale " + canaleDaBannare + " e sei stato spostato nella lobby.");
+            clientWriter.writeToClient(userDaBannare.getSocketChannel(), banMessage.toString());
 
+
+            // Notifica chi ha eseguito il ban in formato JSON
+            JsonObject successMessage = new JsonObject();
+            successMessage.addProperty("status", "success");
+            successMessage.addProperty("message", "Utente bannato con successo dal canale " + canaleDaBannare);
+            clientWriter.writeToClient(mittente, successMessage.toString());
         } catch (Exception e) {
             System.err.println("Errore durante il ban dell'utente: " + e.getMessage());
         }
@@ -110,3 +125,50 @@ public class GestoreBanUtente implements IBanUtenti{
         "channel": "nome_canale"
         }
         */
+
+
+/*
+Messaggi di ban in formato JSON:
+
+Se l'utente viene bannato, viene inviato un messaggio in formato JSON all'utente bannato:
+json
+
+{
+  "status": "banned",
+  "message": "Sei stato bannato dal canale canaleDaBannare e sei stato spostato nella lobby."
+}
+Messaggio di successo per chi ha bannato:
+
+Dopo che l'utente è stato bannato, chi ha eseguito il ban riceve un messaggio di conferma in formato JSON:
+json
+
+{
+  "status": "success",
+  "message": "Utente bannato con successo dal canale canaleDaBannare."
+}
+Messaggi di errore in formato JSON:
+
+Se l'amministratore tenta di bannare qualcuno nella lobby o l'utente non viene trovato, viene inviato un messaggio di errore in formato JSON:
+json
+
+{
+  "status": "error",
+  "message": "Non puoi bannare utenti nella lobby."
+}
+Se l'utente non viene trovato:
+json
+
+{
+  "status": "error",
+  "message": "Utente non trovato o più utenti con lo stesso nome."
+}
+Gestione delle eccezioni:
+
+In caso di eccezione, viene inviato un messaggio di errore in formato JSON all'amministratore:
+json
+
+{
+  "status": "error",
+  "message": "Errore durante il ban dell'utente."
+}
+ */

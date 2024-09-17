@@ -33,8 +33,19 @@ public class GestoreMessaggiPrivati implements IGestoreMessaggiPrivati {
     @Override
     public void inviaMessaggioPrivato(SocketChannel mittente, String messaggio) {
         try {
-            System.out.println(messaggio);
-            JsonObject jsonMessage = JsonParser.parseString(messaggio).getAsJsonObject();
+                System.out.println(messaggio);
+
+                JsonObject jsonMessage = JsonParser.parseString(messaggio).getAsJsonObject();
+
+                // Verifica che il JSON contenga i campi necessari
+                if (!jsonMessage.has("recipient") || !jsonMessage.has("message")) {
+                    JsonObject errore = new JsonObject();
+                    errore.addProperty("status", "error");
+                    errore.addProperty("message", "Messaggio JSON non valido. Manca il campo recipient o message.");
+                    clientWriter.writeToClient(mittente, errore.toString());
+                    return;
+                }
+
             String recipient = jsonMessage.get("recipient").getAsString();
             String contenutoMessaggio = jsonMessage.get("message").getAsString();
 
@@ -55,19 +66,48 @@ public class GestoreMessaggiPrivati implements IGestoreMessaggiPrivati {
                 if (senderTempId != null) {
                     senderNick = senderNick + "(" + senderTempId + ")";
                 }
-                senderNick = senderNick+" [priv]";
+                contenutoMessaggio = "[privato]" + contenutoMessaggio;
                 risposta.addProperty("sender", senderNick);
                 risposta.addProperty("message", contenutoMessaggio);
 
                 clientWriter.writeToClient(userDestinatario.getSocketChannel(), risposta.toString());
             } else {
-                clientWriter.writeToClient(mittente, "Utente non trovato o più utenti con lo stesso nome.");
+                // Invia un messaggio di errore in formato JSON
+                JsonObject errore = new JsonObject();
+                errore.addProperty("status", "error");
+                errore.addProperty("message", "Utente non trovato o più utenti con lo stesso nome.");
+                clientWriter.writeToClient(mittente, errore.toString());
             }
-        } catch (IOException e) {
-            System.err.println("Errore durante l'invio del messaggio privato: " + e.getMessage());
+        }  catch (IOException e) {
+        System.err.println("Errore durante l'invio del messaggio privato: " + e.getMessage());
+
+        // Invia un messaggio di errore generico in formato JSON al mittente
+        JsonObject errore = new JsonObject();
+        errore.addProperty("status", "error");
+        errore.addProperty("message", "Errore durante l'invio del messaggio privato.");
+        try {
+            clientWriter.writeToClient(mittente, errore.toString());
+        } catch (IOException ioException) {
+            System.err.println("Errore durante l'invio del messaggio di errore: " + ioException.getMessage());
         }
     }
+}
 
+/*
+Se l'utente destinatario non viene trovato:
+json
+{
+  "status": "error",
+  "message": "Utente non trovato o più utenti con lo stesso nome."
+}
+Se si verifica un errore durante l'invio del messaggio:
+json
+
+{
+  "status": "error",
+  "message": "Errore durante l'invio del messaggio privato."
+}
+ */
 
 
 

@@ -56,14 +56,25 @@ public class GestoreKickCanale implements IGestoreKickCanale {
             if (!firstChannel.equals(userDaKickare.getChannel())) {
                 userDaKickare.setChannel(firstChannel);
                 channels.get(firstChannel).add(userDaKickare.getSocketChannel());
-                clientWriter.writeToClient(userDaKickare.getSocketChannel(), "Sei stato espulso e spostato nel canale: " + firstChannel);
+                //clientWriter.writeToClient(userDaKickare.getSocketChannel(), "Sei stato espulso e spostato nel canale: " + firstChannel);
+                // Messaggio di espulsione in formato JSON
+                JsonObject kickMessage = new JsonObject();
+                kickMessage.addProperty("status", "kicked");
+                kickMessage.addProperty("message", "Sei stato espulso e spostato nel canale: " + firstChannel);
+                clientWriter.writeToClient(userDaKickare.getSocketChannel(), kickMessage.toString());
                 System.out.println("Utente " + userDaKickare.getNick() + " (" + tempId + ") è stato espulso dal canale: " + canaleAttuale);
             } else {
-                clientWriter.writeToClient(admin, "Utente già nel canale di destinazione.");
-            }
+// Utente già nel canale di destinazione
+                JsonObject errorMessage = new JsonObject();
+                errorMessage.addProperty("status", "error");
+                errorMessage.addProperty("message", "Utente già nel canale di destinazione.");
+                clientWriter.writeToClient(admin, errorMessage.toString());            }
         } else {
-            clientWriter.writeToClient(admin, "Utente non trovato o più utenti con lo stesso nome.");
-        }
+// Utente non trovato o più utenti con lo stesso nome
+            JsonObject errorMessage = new JsonObject();
+            errorMessage.addProperty("status", "error");
+            errorMessage.addProperty("message", "Utente non trovato o più utenti con lo stesso nome.");
+            clientWriter.writeToClient(admin, errorMessage.toString());        }
     }
 
     // Metodo che cerca l'utente globalmente in tutti i canali
