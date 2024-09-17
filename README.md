@@ -96,6 +96,67 @@ Comandi per gli utenti
 }
 ```
 
+## Comandi per gli amministratori
+/ban leo:00001 nome_canale:
+
+``` json
+{
+  "command": "ban",
+  "message": "leo:00001",
+  "channel": "nome_canale"
+}
+```
+/fban uuid-1234:
+
+``` json
+{
+  "command": "fban",
+  "uuid": "uuid-1234"
+}
+```
+/unban leo:00001 nome_canale:
+
+``` json
+{
+  "command": "unban",
+  "message": "leo:00001",
+  "channel": "nome_canale"
+}
+```
+/funban uuid-1234:
+
+``` json
+{
+  "command": "funban",
+  "uuid": "uuid-1234"
+}
+```
+/kick leo:00001 nome_canale:
+
+``` json
+{
+  "command": "kick",
+  "message": "leo:00001",
+  "channel": "nome_canale"
+}
+```
+/promote leo:00001:
+
+``` json
+
+{
+  "command": "promote",
+  "message": "leo:00001"
+}
+```
+/unpromote leo:00001:
+
+``` json
+{
+  "command": "unpromote",
+  "message": "leo:00001"
+}
+```
 
 ### Server
 
