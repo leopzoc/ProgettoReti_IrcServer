@@ -195,70 +195,202 @@ Il server permette di gestire:
 
 ### Messaggi che invia il server ai client
 
-#### Gestore login
-In questo gestore di login, il sistema invia diversi messaggi ai client tramite il metodo clientWriter.writeToClient(). Ecco i vari messaggi che il gestore invia, in base a diverse situazioni durante la gestione del login:
-
+Gestore login
 Login riuscito:
 
-Se l'utente è autenticato con successo:
-
-"Login successful. Welcome, " + nick
-Questo messaggio conferma il login con successo e dà il benvenuto all'utente con il suo nickname.
-Utente già connesso:
-
-Se l'utente tenta di connettersi nuovamente mentre è già connesso:
-
-"User is already connected."
-Questo messaggio notifica al client che l'utente è già connesso al server.
-Utente bannato:
-
-Se l'utente è stato bannato e tenta di connettersi:
-
-"You are banned from this server."
-Questo avverte il client che l'utente non può connettersi perché è stato bannato.
-Registrazione riuscita:
-
-Se il nickname non è già presente nel sistema e viene creato un nuovo utente:
-
-"Registration successful. Welcome, " + nick
-Questo messaggio informa il client che la registrazione è avvenuta con successo e dà il benvenuto al nuovo utente.
-Assegnazione a un canale:
-
-Dopo il login o la registrazione, l'utente viene assegnato a un canale:
-
-"You have been assigned to channel: " + firstChannel
-
-Questo messaggio notifica l'utente del canale a cui è stato assegnato.
-Inoltre, il sistema potrebbe inviare ulteriori messaggi se vengono implementati nuovi comportamenti, ma questi sono i principali messaggi che il gestore invia attualmente.
-
-
-
-
-#### Gestore broadcastMessage
-
-
-Situazioni in cui vengono inviati messaggi
-Messaggio di broadcast: Quando un utente invia un messaggio, questo viene trasmesso a tutti gli altri utenti nel suo stesso canale (eccetto il mittente). Il messaggio che viene inviato è strutturato in JSON come segue:
-
 ```json
-
 {
-    "sender": "nome_utente",
-    "message": "questo è il messaggio"
+  "status": "success",
+  "message": "Login successful. Welcome, nickname"
 }
 ```
-sender: Questo è il nickname del mittente del messaggio. Se il mittente ha un ID temporaneo (in caso di nickname duplicato), l'ID temporaneo viene aggiunto tra parentesi al nickname, ad esempio: "sender": "utente(00001)".
-message: Questo è il contenuto del messaggio inviato dall'utente.
-Gestione degli ID temporanei: Se l'utente mittente ha un nickname duplicato, viene assegnato un ID temporaneo (come 00001, 00002, ecc.). In tal caso, il nickname dell'utente sarà formattato come:
+Utente già connesso:
 
 ```json
-
-"sender": "nome_utente(00001)"
+{
+  "status": "error",
+  "message": "User is already connected."
+}
 ```
-Processo di invio
-Il gestore recupera il canale a cui appartiene l'utente che invia il messaggio e ottiene tutti i client (socket) connessi a quel canale.
-Per ogni client nel canale, escluso il mittente, viene inviato il messaggio in formato JSON.
-Se il canale non è trovato o l'utente mittente non è in un canale, vengono stampati messaggi di errore, ma non viene inviato nulla ai client.
+Utente bannato:
+
+```json
+{
+  "status": "error",
+  "message": "You are banned from this server."
+}
+```
+Registrazione riuscita:
+
+```json
+{
+  "status": "success",
+  "message": "Registration successful. Welcome, nickname"
+}
+```
+Assegnazione a un canale:
+
+```json
+{
+  "status": "success",
+  "message": "You have been assigned to channel: firstChannel"
+}
+```
+Gestore broadcastMessage
+Messaggio di broadcast:
+```json
+{
+  "sender": "nome_utente",
+  "message": "questo è il messaggio"
+}
+```
+Gestore switchChannel
+Errore durante il cambio di canale:
+
+```json
+{
+  "status": "error",
+  "message": "Non puoi unirti al canale channelName perché sei stato bannato."
+}
+```
+Cambio di canale riuscito:
+
+```json
+{
+  "status": "success",
+  "message": "You have joined channelName."
+}
+```
+Gestore kick
+Espulsione riuscita:
+
+```json
+{
+  "status": "kicked",
+  "message": "Sei stato espulso e spostato nel canale: firstChannel"
+}
+```
+Errore - Utente già nel canale di destinazione:
+
+```json
+{
+  "status": "error",
+  "message": "Utente già nel canale di destinazione."
+}
+```
+Errore - Utente non trovato:
+
+```json
+{
+  "status": "error",
+  "message": "Utente non trovato o più utenti con lo stesso nome."
+}
+```
+Gestore ban
+Utente bannato con successo:
+
+```json
+{
+  "status": "banned",
+  "message": "Sei stato bannato dal canale nome_canale e sei stato spostato nella lobby."
+}
+```
+Errore - Utente non trovato:
+
+```json
+{
+  "status": "error",
+  "message": "Utente non trovato o più utenti con lo stesso nome."
+}
+```
+Errore - Non puoi bannare utenti nella lobby:
+
+```json
+{
+  "status": "error",
+  "message": "Non puoi bannare utenti nella lobby."
+}
+```
+Gestore fban
+Ban definitivo riuscito:
+
+```json
+{
+  "status": "success",
+  "message": "Utente bannato definitivamente."
+}
+```
+Errore durante il ban:
+
+```json
+{
+  "status": "error",
+  "message": "Errore durante il ban dell'utente tramite UUID."
+}
+```
+Gestore funban
+Utente sbannato con successo:
+
+```json
+{
+  "status": "success",
+  "message": "Utente sbannato con successo tramite UUID."
+}
+```
+Errore durante lo sbannamento:
+
+```json
+{
+  "status": "error",
+  "message": "Errore durante lo sbannamento dell'utente tramite UUID."
+}
+```
+Gestore promote
+Promozione riuscita:
+
+```json
+{
+  "status": "success",
+  "message": "Utente Nickname è stato promosso a admin."
+}
+```
+
+Errore - Utente già admin:
+
+```json
+{
+  "status": "info",
+  "message": "L'utente è già admin."
+}
+```
+
+Gestore unpromote
+Rimozione dei privilegi di admin riuscita:
+
+```json
+{
+  "status": "success",
+  "message": "Utente Nickname non è più admin."
+}
+```
+Errore - Utente non è admin:
+
+```json
+{
+  "status": "info",
+  "message": "L'utente non è admin."
+}
+```
+Gestore visualizzaUtenti
+Errore durante la visualizzazione degli utenti:
+```json
+{
+  "status": "error",
+  "message": "Errore durante la visualizzazione degli utenti."
+}
+```
+
+
 
 
 
