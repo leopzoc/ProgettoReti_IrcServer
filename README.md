@@ -5,138 +5,79 @@ Questo progetto implementa un server IRC utilizzando la libreria Java NIO con `S
 
 ## Funzionalità principali
 
-### Client
+### Client IRC
+
+il client irc puo loggarsi come user o come admin dipende dai privileggi che ha nel file users.txt che risiede nel server.
 
 Il client può:
 
-- **Connettersi a un server** specificando un nome utente. Non è richiesta la password.
-- **Richiedere la lista dei canali** attivi inviando il comando:
-  ```bash
-  /list
-  ```
-- **Connettersi a un canale** specifico utilizzando il comando:
-  ```bash
-  /join #channel_name
-  ```
-- **Visualizzare gli utenti connessi** al canale con il comando:
-  ```bash
-  /users
-  ```
-- **Inviare messaggi** nel canale connesso con il comando:
-  ```bash
-  /msg messaggio
-  ```
-- **Inviare un messaggio privato a un utente** specifico con il comando:
-  ```bash
-  /privmsg nickname:tempid messaggio
-  ```
-- **Cambiare canale** in qualsiasi momento con lo stesso comando di join:
-  ```bash
-  /switchchannel #nuovo_canale
-  ```
+- **Connettersi a un server** specificando un nome utente e la password.
+## Comandi per gli utenti:
 
-Il server gestisce la comunicazione tra tutti i client connessi.
+/join canale: Permette di unirsi a un canale specificato. Ad esempio, /join generale ti farà entrare nel canale "generale".
+/msg Ciao mondo: Invia un messaggio al canale corrente. Ad esempio, /msg Ciao mondo invierà il messaggio "Ciao mondo" a tutti i membri del canale.
+/list: Visualizza la lista di tutti i canali disponibili nel server.
+/users: Mostra l'elenco di tutti gli utenti connessi nel canale corrente.
+/lu: List and user
+Comandi per gli amministratori:
+/ban [utente] [canale]: Espelle permanentemente un utente da un canale specifico o da tutti i canali se non viene specificato un canale. Ad esempio, /ban leo:00001 bannerà l'utente "leo:00001" dal server.
+/fban [utente]: Esegue un ban definitivo di un utente in modo forzato. Ad esempio, /fban uuid-1234 bannerà l'utente con UUID uuid-1234.
+/unban [utente] [canale]: Rimuove il ban di un utente da un canale o dall'intero server. Ad esempio, /unban leo:00001 generale rimuoverà il ban dell'utente "leo:00001" dal canale "generale".
+/funban [utente]: Rimuove il ban definitivo di un utente. Ad esempio, /funban uuid-1234 rimuoverà il ban definitivo dell'utente con UUID uuid-1234.
+/kick [utente] [canale]: Espelle temporaneamente un utente da un canale. Ad esempio, /kick leo:00001 generale espellerà "leo:00001" dal canale "generale".
+/promote [utente]: Promuove un utente a un ruolo superiore (ad esempio da utente normale ad amministratore). Ad esempio, /promote leo:00001 promuoverà l'utente "leo:00001".
+/unpromote [utente]: Declassa un utente a un ruolo inferiore (ad esempio da amministratore a utente normale). Ad esempio, /unpromote leo:00001 declasserà "leo:00001".
 
-### Amministratore
+# formattazione dei comandi 
+ogni comando viene inviato tramite json quindi non ce necessita di creare comandi concreti come negli altri irc server/client infatti /join /list puo essere facilmente cambiato in /entra /canali dovuto al fatto che il server interpreta questi tipi di json associati al comando 
 
-L'utente amministratore ha ulteriori privilegi e può:
 
-- **Espellere un utente dal canale** con il comando:
-  ```bash
-  /kick nickname:tempid [nome_canale]
-  ```
-  Esempio JSON:
-  ```json
-  {
-      "command": "kick",
-      "message": "leo:00001",
-      "channel": "general"
-  }
-  ```
+Comandi per gli utenti
+/join canale:
 
-- **Bannare e sbanare un utente dal canale** con i comandi:
-  ```bash
-  /ban nickname:tempid nome_canale
-  /unban nickname:tempid nome_canale
-  ```
-  Esempio JSON ban:
-  ```json
-  {
-      "command": "ban",
-      "message": "leo:00001",
-      "channel": "general"
-  }
-  ```
+```json
+{
+  "command": "switch_channel",
+  "message": "nome_canale"
+}
+```
+/msg Ciao mondo:
 
-  Esempio JSON unban:
-  ```json
-  {
-      "command": "unban",
-      "message": "leo:00001",
-      "channel": "general"
-  }
-  ```
+```json
+{
+  "command": "send_message",
+  "message": "Ciao mondo"
+}
+```
+/list:
 
-- **Promuovere e degradare un utente** con i comandi:
-  ```bash
-  /promote nickname:tempid
-  /unpromote nickname:tempid
-  ```
-  Esempio JSON promote:
-  ```json
-  {
-      "command": "promote",
-      "message": "leo:00001"
-  }
-  ```
+```json
+{
+  "command": "list"
+}
+```
+/users:
 
-  Esempio JSON unpromote:
-  ```json
-  {
-      "command": "unpromote",
-      "message": "leo:00001"
-  }
-  ```
+```json
+{
+  "command": "users"
+}
+```
+/lu (list and user):
 
-### Gestione dei canali
+```json
+{
+  "command": "lu"
+}
+```
 
-- **Visualizzare i canali attivi**:
-  ```bash
-  /list
-  ```
-  Esempio JSON risposta dal server:
-  ```json
-  {
-      "channels": ["general", "tech", "random", "news"]
-  }
-  ```
-
-- **Visualizzare utenti presenti nei canali**:
-  ```bash
-  /lu
-  ```
-  Esempio JSON:
-  ```json
-  {
-      "channels": [
-          {
-              "channel": "general",
-              "users": ["user1", "user2"]
-          },
-          {
-              "channel": "random",
-              "users": ["user3"]
-          }
-      ]
-  }
-  ```
 
 ### Server
 
 Il server permette di gestire:
 
 - **Connessioni di utenti** su diversi canali.
-- **Gestione di canali attivi**: i canali sono identificati da un prefisso `#` e rappresentano gruppi di utenti connessi.
+- **Gestione di canali attivi**: i canali possono essere identificati da un prefisso `#` ma non è necessario e rappresentano gruppi di utenti connessi. 
 - **Cambio di canale** per gli utenti.
 - **Collisioni di nomi**: impedisce che due utenti con lo stesso nome si connettano contemporaneamente.
 - **Messaggi privati**: due utenti possono scambiarsi messaggi diretti con l'uso del tempid.
