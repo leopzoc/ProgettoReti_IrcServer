@@ -28,6 +28,25 @@ Mostra l'elenco di tutti gli utenti connessi nel canale corrente.
 
 #### /lu: List and user
 
+Comando per inviare un messaggio privato
+/privmsg destinatario messaggio:
+
+```json
+{
+  "command": "privmsg",
+  "recipient": "destinatario",
+  "message": "messaggio"
+}
+```
+Ad esempio, se vuoi inviare il messaggio "Ciao" all'utente "leo:00001", il JSON sarà:
+
+```json
+{
+  "command": "privmsg",
+  "recipient": "leo:00001",
+  "message": "Ciao"
+}
+```
 ### Comandi per gli amministratori:
 #### /ban [utente] [canale]:
 Espelle permanentemente un utente da un canale specifico o da tutti i canali se non viene specificato un canale. Ad esempio, /ban leo:00001 bannerà l'utente "leo:00001" dal server.
