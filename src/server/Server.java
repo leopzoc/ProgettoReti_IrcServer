@@ -53,7 +53,8 @@ import java.util.concurrent.Executors;
         private final Map<String, Set<SocketChannel>> channels; //StringCanale #gereal -> lista di canali connessi
         private final Map<SocketChannel, User> connectedUsers = new ConcurrentHashMap<>(); // canaleSocket -> utente
         private final Map<SocketChannel, ByteBuffer> pendingData = new ConcurrentHashMap<>(); // socketcanale del utente -> buffer associato
-        private final ExecutorService broadcastExecutor = Executors.newCachedThreadPool(); // per invio dei messaggi in broadcast
+        //il nome l'abbiamo lasciato come broadcastExecutor come ricordo della sua prima funzione asincrona ossia essere utilizzata solo come Executor per mandare messaggi in broadcast ora gestisce tutti gli altri invii
+        private final ExecutorService broadcastExecutor = Executors.newCachedThreadPool(); // per invio dei messaggi in broadcast, con la nuova implementazione gestisce anche altri tipi di invio
 
         private final Map<String, Set<String>> bannedUsersByChannel = new ConcurrentHashMap<>(); //persone bannate dai canali "stringe" no channelsocket
 
@@ -102,18 +103,18 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
             GestoreUtenti gestoreUtenti = new GestoreUtenti(userFilePath);
             gestoreUtenti.creaFileUtenti();  // Questo è dove viene creato il file se non esiste
 
-
+            //inizializzatore del client writer
             ClientWriter clientWriter = new ClientWriterImpl(pendingData);
             IGestoreDisconnesioneClient gestoreDisconnesioneClient = new GestoreDisconnesioneClient(channels, connectedUsers, pendingData, selector,duplicateUsersMap,tempIdCounters);
-
+            //inizializzo i gestori
             GestoreLogin gestoreLogin = new GestoreLogin(connectedUsers, clientWriter,channels,duplicateUsersMap,tempIdCounters);
             BroadcastMessage gestoreSendBrodcastMessage = new BroadcastMessage(connectedUsers,broadcastExecutor,channels,clientWriter,duplicateUsersMap);
             SwitchChannelChange switchChannelChange = new SwitchChannelChange(connectedUsers,channels,bannedUsersByChannel,clientWriter);
-            GestoreListView listView = new GestoreListView(channels,clientWriter);
-            GestoreViewUser gestoreViewUser = new GestoreViewUser(channels,connectedUsers,clientWriter,duplicateUsersMap);
-            GestoreMessaggiPrivati gestoreMessaggiPrivati = new GestoreMessaggiPrivati(connectedUsers,clientWriter,duplicateUsersMap);
+            GestoreListView listView = new GestoreListView(channels,clientWriter,broadcastExecutor);
+            GestoreViewUser gestoreViewUser = new GestoreViewUser(channels,connectedUsers,clientWriter,duplicateUsersMap,broadcastExecutor);
+            GestoreMessaggiPrivati gestoreMessaggiPrivati = new GestoreMessaggiPrivati(connectedUsers,clientWriter,duplicateUsersMap,broadcastExecutor);
             GestoreKickCanale gestoreKickCanale = new GestoreKickCanale(connectedUsers,channels,clientWriter,duplicateUsersMap);
-            GestoreListEUsers gestoreListEUsers = new GestoreListEUsers(channels,connectedUsers,clientWriter);
+            GestoreListEUsers gestoreListEUsers = new GestoreListEUsers(channels,connectedUsers,clientWriter,broadcastExecutor);
             GestoreBanUtente gestoreBanUtente = new GestoreBanUtente(connectedUsers,clientWriter,channels,bannedUsersByChannel,duplicateUsersMap);
             GestoreUnbanUtente gestoreUnbanUtente = new GestoreUnbanUtente(bannedUsersByChannel,connectedUsers,clientWriter);
             GestoreFBanUtente gestoreFBanUtente = new GestoreFBanUtente(connectedUsers,clientWriter, (GestoreDisconnesioneClient) gestoreDisconnesioneClient);
@@ -149,8 +150,9 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
 
 
 
-
+//metodo di start del server
         public void start() {
+            //apertura e avvio del serversocketchannel stiamo usando java nio
             try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
                 serverSocketChannel.configureBlocking(false);
                 serverSocketChannel.socket().bind(new InetSocketAddress(IP, port));
@@ -182,7 +184,7 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
             shutdownServer();
             }
         }
-
+//chiudi tutto nel broadcastExecutor
         private void shutdownServer() {
             broadcastExecutor.shutdown();
             for (var clients : channels.values()) {
@@ -196,6 +198,8 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
             }
         }
 
+
+    // routine del server per scrivere i dati pendenti (potevamo farlo girare su un thread)
         private void scrivoAlClient(SelectionKey key) throws IOException {
             SocketChannel client = (SocketChannel) key.channel(); //client dove scrivere
             ByteBuffer buffer = pendingData.get(client); //ci prendiamo i dati pendenti

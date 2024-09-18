@@ -33,12 +33,12 @@ public class CommandHandler {
         // Aggiungi il comando di login
         this.connectedUsers = connectedUsers;
         commonCommands.put("login", new LoginCommand(gestoreLogin));
-        commonCommands.put("send_message", new SendMessageBroadcastCommand(sendMessageBroadcastCommand));
+        commonCommands.put("send_message", new SendMessageBroadcastCommand(sendMessageBroadcastCommand)); //asincrono
         commonCommands.put("switch_channel", new SwitchChannelCommand(swichChannelChange));
-        commonCommands.put("list", new ListCommand(gestoreListView));
-        commonCommands.put("users", new UsersListCommand(gestoreViewUser));
-        commonCommands.put("privmsg",new PrivateMessageCommand(gestoreMessaggiPrivati));
-        commonCommands.put("lu",new ListAndUsersCommand(gestoreListEUser));
+        commonCommands.put("list", new ListCommand(gestoreListView));//asincrono
+        commonCommands.put("users", new UsersListCommand(gestoreViewUser));//asincrono
+        commonCommands.put("privmsg",new PrivateMessageCommand(gestoreMessaggiPrivati));//asincrono
+        commonCommands.put("lu",new ListAndUsersCommand(gestoreListEUser));//asincrono
         // Comandi amministrativi
         adminCommands.put("kick", new KickUserCommand(gestorekickCanale));
         adminCommands.put("ban", new BanCommand(gestoreBanUtente));

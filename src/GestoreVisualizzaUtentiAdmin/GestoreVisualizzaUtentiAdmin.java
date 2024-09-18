@@ -27,6 +27,7 @@ public class GestoreVisualizzaUtentiAdmin {
             // Carica tutti gli utenti dal file
             Map<String, User> allUsers = GestoreUtenti.loadUsers();
 
+            //crea il json
             JsonArray usersArray = new JsonArray();
 
             for (User user : allUsers.values()) {
