@@ -4,7 +4,6 @@ e5854a88-2194-475f-a550-4ab9ec193b91:leo:4321:active:user
 262d3603-f98b-4b70-9962-8ae7457a6fa0:pop:455:active:user
 d79d8c62-c798-48c4-ab07-79e719f34767:leo:1234:active:user
 3b02f717-7114-4be1-a7fd-58e4cd26951c:pascuale:123:active:user
-a573a4d9-2c84-4ce7-9658-796d0d5c05a8:pasqualediocane::banned:user
 0fe56a77-c988-4570-ba5d-47b140b79bd0:oshimen::active:admin
 ce49323f-a13e-41ec-8cd0-7164f53fa10b:gigo:admin:active:user
 4a992846-1fd5-4cdd-b0c7-16d4cdadb59f:user:password:active:user
