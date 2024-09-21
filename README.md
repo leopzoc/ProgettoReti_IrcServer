@@ -406,28 +406,6 @@ Nel progetto sono inclusi **due semplici client** per testare il funzionamento d
 - **Java 8** o superiore.
 - **Maven** (facoltativo per la gestione delle dipendenze).
 
-## Istruzioni per l'esecuzione
-
-1. Clona il repository:
-   ```bash
-   git clone https://github.com/leopzoc/ProgettoReti_IrcServer.git
-   cd ProgettoReti_IrcServer
-   ```
-
-2. Compila il progetto:
-   ```bash
-   javac -d out src/server/*.java
-   ```
-
-3. Esegui il server:
-   ```bash
-   java -cp out server.Server
-   ```
-
-4. Esegui un client per connetterti al server:
-   ```bash
-   java -cp out client.Client
-   ```
 
 ## Contributi
 
@@ -435,7 +413,9 @@ I contributi sono benvenuti. Puoi aprire una pull request o segnalare problemi n
 
 ## Autori
 
-- **leopzoc** - Implementazione e sviluppo del progetto.
+- **leopzoc** -  (Leonardo Pulzone)
+- **Pasquale Mazzocchi** (non di disponendo di un account github viene menzionato negli autori ma non è presente come collaboratore)
+- **Fabrizio Auremma** (non di disponendo di un account github viene menzionato negli autori ma non è presente come collaboratore)
 
 ---
 
