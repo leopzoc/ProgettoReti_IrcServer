@@ -414,7 +414,7 @@ I contributi sono benvenuti. Puoi aprire una pull request o segnalare problemi n
 ## Autori
 
 - **leopzoc** -  (Leonardo Pulzone)
-- **Pasquale Mazzocchi** (non di disponendo di un account github viene menzionato negli autori ma non è presente come collaboratore)
+- **Shooter-24** (Pasquale Mazzocchi)
 - **Fabrizio Auremma** (non di disponendo di un account github viene menzionato negli autori ma non è presente come collaboratore)
 
 ---
