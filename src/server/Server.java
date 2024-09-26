@@ -77,11 +77,11 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
         private final Map<String, Integer> tempIdCounters = new ConcurrentHashMap<>(); //
 
 
-        private final String userFilePath = "users.txt";
+        private static final String userFilePath = "users.txt";
         private String IP;
         private int port;
         private final Selector selector;
-
+        private GestoreUtenti gestoreUtenti;
 
         private final IGestoreAccettazione gestoreAccettazione;
         private final IGestoreLetturaClient gestioneLetturaClient;
@@ -94,14 +94,14 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
             }
         }
 
-        public Server(Configurazione configurazione) throws IOException {
+        public Server(Configurazione configurazione, GestoreUtenti gestoreUtenti) throws IOException {
             this.channels = configurazione.getChannels();
             this.IP = configurazione.getIP();
             this.port = configurazione.getPort();
+            this.gestoreUtenti = gestoreUtenti;
 
-            // Inizializza GestoreUtenti con il percorso del file
-            GestoreUtenti gestoreUtenti = new GestoreUtenti(userFilePath);
-            gestoreUtenti.creaFileUtenti();  // Questo è dove viene creato il file se non esiste
+
+
 
             //inizializzatore del client writer
             ClientWriter clientWriter = new ClientWriterImpl(pendingData);
@@ -135,13 +135,12 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
                 Configurazione configurazione = new Configurazione(channels, "", 0);
 
                 // Inizializza GestoreUtenti qui
-                GestoreUtenti gestoreUtenti = new GestoreUtenti("users.txt");
-                gestoreUtenti.creaFileUtenti();
+                GestoreUtenti gestoreUtenti = new GestoreUtenti(userFilePath);
 
                 configurazione.configurazioneServer();
 
                 // Creazione e avvio del server con la configurazione
-                Server server = new Server(configurazione);
+                Server server = new Server(configurazione, gestoreUtenti);
                 server.start();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -157,8 +156,9 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
                 serverSocketChannel.configureBlocking(false);
                 serverSocketChannel.socket().bind(new InetSocketAddress(IP, port));
                 serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-
                 Map<SocketChannel, ByteBuffer> buffers = new ConcurrentHashMap<>(); // mappa per gestire i ByteBuffer dei client
+
+                System.out.println("Server avviato: \n in attesa di connessioni:");
 
                 while (true) {
                     if (selector.select() == 0) continue; // conta i client pronti a essere "accettati o trasmettere o essere scritti"

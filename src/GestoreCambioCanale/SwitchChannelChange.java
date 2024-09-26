@@ -43,23 +43,35 @@ public class SwitchChannelChange implements ISwitchChannelChange {
                 return;
             }
 
-            // Rimuovi l'utente dal canale corrente, se presente
-            Set<SocketChannel> currentChannelClients = channels.get(user.getChannel());
-            if (currentChannelClients != null) {
-                currentChannelClients.remove(client);
-            }
-
-            // Aggiungi l'utente al nuovo canale
-            user.setChannel(channelName);
-            channels.computeIfAbsent(channelName, k -> ConcurrentHashMap.newKeySet()).add(client);
-
-            System.out.println("User " + user.getNick() + " switched to channel: " + channelName);
-
-            // Invia messaggio di conferma in formato JSON
             JsonObject response = new JsonObject();
-            response.addProperty("status", "success");
-            response.addProperty("message", "You have joined " + channelName);
-            clientWriter.writeToClient(client, response.toString());
+            //se contiene il canale cambialo se no manda messaggio di errore
+            if (channels.containsKey(channelName)) {
+
+
+                // Rimuovi l'utente dal canale corrente, se presente
+                Set<SocketChannel> currentChannelClients = channels.get(user.getChannel());
+                if (currentChannelClients != null) {
+                    currentChannelClients.remove(client);
+                }
+
+                // Aggiungi l'utente al nuovo canale
+                user.setChannel(channelName);
+                channels.computeIfAbsent(channelName, k -> ConcurrentHashMap.newKeySet()).add(client);
+
+                System.out.println("User " + user.getNick() + " switched to channel: " + channelName);
+
+                // Invia messaggio di conferma in formato JSON
+
+                response.addProperty("status", "success");
+                response.addProperty("message", "You have joined " + channelName);
+                clientWriter.writeToClient(client, response.toString());
+            }
+            else{
+
+                response.addProperty("status", "fail");
+                response.addProperty("message",  channelName + " not exists");
+                clientWriter.writeToClient(client, response.toString());
+            }
         }
     }
 }
