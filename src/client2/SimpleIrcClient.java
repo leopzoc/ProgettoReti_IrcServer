@@ -154,7 +154,8 @@ public class SimpleIrcClient {
                 messageArea.append("You must connect to a server first.\n");
             }
         }
-
+        //Elabora il messaggio inserito dall'utente e genera un JSON formattato correttamente in base al comando specificato. 
+        //Questo JSON viene poi utilizzato per inviare i messaggi sul lato client.
         private String createJsonMessage(String message) {
             String command;
             String recipientWithTempId = "";
