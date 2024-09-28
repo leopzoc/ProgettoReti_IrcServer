@@ -30,7 +30,7 @@ public class CommandHandler {
 
 
     public CommandHandler(GestoreLogin gestoreLogin, BroadcastMessage sendMessageBroadcastCommand, SwitchChannelChange swichChannelChange, GestoreListView gestoreListView, GestoreViewUser gestoreViewUser, GestoreListEUsers gestoreListEUser, GestoreMessaggiPrivati gestoreMessaggiPrivati, GestoreKickCanale gestorekickCanale, GestoreBanUtente gestoreBanUtente, GestoreUnbanUtente gestoreUnBan, GestoreFBanUtente gestoreFBanUtente, GestoreFunbanUtente gestoreFunbanUtente, GestoreVisualizzaUtentiAdmin gestoreVisualizzaUtentiAdmin, GestorePromuoviUtente gestorePromuoviUtente, GestoreUnpromuoviUtente gestoreUnpromuoviUtente, Map<SocketChannel, User> connectedUsers) {
-        // Aggiungi il comando di login
+        // Comandi utente
         this.connectedUsers = connectedUsers;
         commonCommands.put("login", new LoginCommand(gestoreLogin));
         commonCommands.put("send_message", new SendMessageBroadcastCommand(sendMessageBroadcastCommand)); //asincrono
@@ -49,7 +49,6 @@ public class CommandHandler {
         adminCommands.put("promote", new PromoteCommand(gestorePromuoviUtente));
         adminCommands.put("unpromote", new UnpromoteCommand(gestoreUnpromuoviUtente));
 
-        // Altri comandi amministrativi possono essere aggiunti qui
     }
 
 

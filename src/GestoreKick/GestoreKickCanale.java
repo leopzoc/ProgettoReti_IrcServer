@@ -32,11 +32,12 @@ public class GestoreKickCanale implements IGestoreKickCanale {
 
     @Override
     public void kickUser(SocketChannel admin, String messaggioKick) throws IOException {
-        JsonObject jsonKick = JsonParser.parseString(messaggioKick).getAsJsonObject();
-        String recipient = jsonKick.get("message").getAsString();
-        String[] recipientParts = recipient.split(":");
-        String nickDaKickare = recipientParts[0];
-        String tempId = recipientParts.length > 1 ? recipientParts[1] : null;
+
+        JsonObject jsonKick = JsonParser.parseString(messaggioKick).getAsJsonObject(); // mi prendo il json
+        String recipient = jsonKick.get("message").getAsString(); //prendo il campo message
+        String[] recipientParts = recipient.split(":"); //se l'id ha un temp id faccio lo split
+        String nickDaKickare = recipientParts[0]; //il primo è il nick
+        String tempId = recipientParts.length > 1 ? recipientParts[1] : null; //ha un temp id?
 
         // Cerca l'utente da kickare globalmente (non limitato a un solo canale)
         User userDaKickare = trovaUtenteGlobalmente(nickDaKickare, tempId);
@@ -95,13 +96,13 @@ public class GestoreKickCanale implements IGestoreKickCanale {
 
 
 
-//admin command
 /*
 {
         "command": "kick",
         "message": "john_doe",
         "channel": "general"
         }
+//admin command
 
         {
     "command": "kick",

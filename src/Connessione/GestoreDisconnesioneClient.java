@@ -35,6 +35,7 @@ public class GestoreDisconnesioneClient implements IGestoreDisconnesioneClient {
         this.tempIdCounters = tempIdCounters;
     }
 
+    //disconnetti il client
     @Override
     public void handleClientDisconnection(SocketChannel client) {
         try {

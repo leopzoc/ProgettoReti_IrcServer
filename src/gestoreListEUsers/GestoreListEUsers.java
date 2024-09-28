@@ -50,9 +50,12 @@ public class GestoreListEUsers implements IGestoreListView {
                 Map<SocketChannel, User> connectedUsersSnapshot = Map.copyOf(connectedUsers);
 
                 JsonArray channelsArray = new JsonArray();
-
+                // Itera attraverso ogni entry della mappa 'channelsSnapshot'.
+                // La chiave rappresenta il nome del canale e il valore è un set di client (SocketChannel) connessi a quel canale.
                 for (Map.Entry<String, Set<SocketChannel>> entry : channelsSnapshot.entrySet()) {
+                    //ottine il nome del canale corrente
                     String channel = entry.getKey();
+                    // Ottiene il set di client (SocketChannel) connessi al canale corrente.
                     Set<SocketChannel> clientsInChannel = entry.getValue();
 
                     JsonObject channelJson = new JsonObject();

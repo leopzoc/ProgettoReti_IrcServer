@@ -1,23 +1,14 @@
 package server;
 
 import GestoreIOUser.GestoreUtenti;
-
 import java.nio.channels.SocketChannel;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-
-import static GestoreIOUser.GestoreUtenti.creaFileUtenti;
-import java.nio.channels.SocketChannel;
-import java.util.Map;
-import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
 public class Configurazione {
     private final Map<String, Set<SocketChannel>> channels;
-
     private String IP;
     private int port;
 
@@ -27,6 +18,7 @@ public class Configurazione {
         this.port = port;
     }
 
+    // Metodo per creare i canali
     public void creaCanale(int numeroCanali) {
         Scanner scanner = new Scanner(System.in);
         for (int i = 0; i < numeroCanali; i++) {
@@ -41,6 +33,7 @@ public class Configurazione {
         }
     }
 
+    // Metodo di configurazione del server
     public void configurazioneServer() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Inserisci l'IP del server:");
@@ -58,6 +51,17 @@ public class Configurazione {
         GestoreUtenti.creaFileUtenti();
 
         System.out.println("Configurazione completata.");
+
+        // Stampa la lista dei canali per verificare
+        stampaListaCanali();
+    }
+
+    // Metodo per stampare la lista dei canali
+    public void stampaListaCanali() {
+        System.out.println("Lista dei canali creati:");
+        for (String canale : channels.keySet()) {
+            System.out.println(" - " + canale);
+        }
     }
 
     public Map<String, Set<SocketChannel>> getChannels() {

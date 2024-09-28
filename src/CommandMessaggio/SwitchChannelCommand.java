@@ -20,6 +20,7 @@ public class SwitchChannelCommand implements Command {
     @Override
     public void execute(SocketChannel client, String message) {
         try {
+            //parsing necessario perché il metodo nasce per accettare una stinga come canale
             JsonObject jsonMessage = JsonParser.parseString(message).getAsJsonObject();
             String canaleAlto = jsonMessage.get("message").getAsString();
             switchChannelChange.switchChannel(client, canaleAlto);

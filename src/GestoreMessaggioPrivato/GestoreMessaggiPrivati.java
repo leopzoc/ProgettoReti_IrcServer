@@ -71,10 +71,11 @@ public class GestoreMessaggiPrivati implements IGestoreMessaggiPrivati {
                     if (senderTempId != null) {
                         senderNick = senderNick + "(" + senderTempId + ")";
                     }
-                    contenutoMessaggio = "[privato]" + contenutoMessaggio;
+                    //fai notare al utente che il msg è privato
+                    contenutoMessaggio = " [privato] " + contenutoMessaggio;
                     risposta.addProperty("sender", senderNick);
                     risposta.addProperty("message", contenutoMessaggio);
-
+                    //invia
                     clientWriter.writeToClient(userDestinatario.getSocketChannel(), risposta.toString());
                 } else {
                     // Invia un messaggio di errore in formato JSON

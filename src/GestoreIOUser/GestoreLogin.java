@@ -38,6 +38,7 @@ public class GestoreLogin implements IGestoreLogin {
 
     @Override
     public void handleLogin(SocketChannel client, JsonObject jsonMessage) throws IOException {
+        //prendi il nick e la password dal jsonObjset
         String nick = jsonMessage.get("nick").getAsString();
         String password = jsonMessage.get("password").getAsString();
 
@@ -155,6 +156,7 @@ public class GestoreLogin implements IGestoreLogin {
         }
     }
 
+    /*
     // Metodo per rimuovere l'ID temporaneo durante la disconnessione
     public void removeTempIdOnDisconnect(User user) {
         String nick = user.getNick();
@@ -171,6 +173,8 @@ public class GestoreLogin implements IGestoreLogin {
             }
         }
     }
+
+     */
 }
 
 

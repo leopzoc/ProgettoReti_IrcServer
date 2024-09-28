@@ -5,7 +5,9 @@ e5854a88-2194-475f-a550-4ab9ec193b91:leo:4321:active:user
 d79d8c62-c798-48c4-ab07-79e719f34767:leo:1234:active:user
 3b02f717-7114-4be1-a7fd-58e4cd26951c:pascuale:123:active:user
 0fe56a77-c988-4570-ba5d-47b140b79bd0:oshimen::active:admin
+2908135e-3bec-423c-bf56-2670bcddab62:tonino:totonno:active:user
 ce49323f-a13e-41ec-8cd0-7164f53fa10b:gigo:admin:active:user
+ef547af8-38ac-422d-b453-678115b7587c:tonino:leo:active:user
 4a992846-1fd5-4cdd-b0c7-16d4cdadb59f:user:password:active:user
 52a9f4bb-56a7-4406-aded-fbed3f149308:gio:pizzi:active:user
 c9364815-6c7f-4e2c-843e-acb6573a804d:leo:123:active:user
