@@ -415,7 +415,6 @@ I contributi sono benvenuti. Puoi aprire una pull request o segnalare problemi n
 
 - **leopzoc** -  (Leonardo Pulzone)
 - **Shooter-24** (Pasquale Mazzocchi)
-- **Fabrizio Auremma** (non di disponendo di un account github viene menzionato negli autori ma non è presente come collaboratore)
 
 ---
 
