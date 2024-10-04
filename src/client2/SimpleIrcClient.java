@@ -296,7 +296,25 @@ public class SimpleIrcClient {
                 return String.format("{\"command\": \"%s\", \"message\": \"%s\", \"channel\": \"%s\"}",
                         command, recipientWithTempId, channel);
 
-            } else {
+            }
+            else if (message.equalsIgnoreCase("/disconnect")) {
+                // Comando di disconnessione
+                command = "disconnect";
+                return String.format("{\"command\": \"%s\", \"nick\": \"%s\"}", command, "leo");  // Sostituisci "leo" con il nickname dell'utente loggato
+            }
+            else if (message.startsWith("/register")) {
+                // Comando di registrazione
+                command = "register";
+                String[] parts = message.substring(10).trim().split(" ", 2);  // Suddivide in "nick password"
+                if (parts.length == 2) {
+                    String nick = parts[0].trim();
+                    String password = parts[1].trim();
+                    return String.format("{\"command\": \"%s\", \"nick\": \"%s\", \"password\": \"%s\"}", command, nick, password);
+                } else {
+                    return "{}"; // Formato errato
+                }
+            }
+            else {
                 return "{}"; // Comando non valido
             }
         }

@@ -106,7 +106,7 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
 
             //inizializzatore del client writer
             ClientWriter clientWriter = new ClientWriterImpl(pendingData);
-            IGestoreDisconnesioneClient gestoreDisconnesioneClient = new GestoreDisconnesioneClient(channels, connectedUsers, pendingData, selector,duplicateUsersMap,tempIdCounters);
+            GestoreDisconnesioneClient gestoreDisconnesioneClient = new GestoreDisconnesioneClient(channels, connectedUsers, pendingData, selector,duplicateUsersMap,tempIdCounters,clientWriter);
             //inizializzo i gestori
             GestoreLogin gestoreLogin = new GestoreLogin(connectedUsers, clientWriter,channels,duplicateUsersMap,tempIdCounters);
             BroadcastMessage gestoreSendBrodcastMessage = new BroadcastMessage(connectedUsers,broadcastExecutor,channels,clientWriter,duplicateUsersMap);
@@ -124,7 +124,7 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
             GestorePromuoviUtente gestorePromuoviUtente = new GestorePromuoviUtente(connectedUsers,clientWriter,userFilePath);
             GestoreUnpromuoviUtente gestoreUnpromuoviUtente = new GestoreUnpromuoviUtente(connectedUsers,clientWriter,userFilePath);
             GestoreRegistrazione gestoreRegistrazione = new GestoreRegistrazione(connectedUsers,clientWriter,channels,duplicateUsersMap,tempIdCounters);
-            CommandHandler commandHandler = new CommandHandler(gestoreLogin, gestoreSendBrodcastMessage,switchChannelChange,listView,gestoreViewUser,gestoreListEUsers,gestoreMessaggiPrivati,gestoreKickCanale,gestoreBanUtente,gestoreUnbanUtente,gestoreFBanUtente,gestoreFunbanUtente,gestoreVisualizzaUtentiAdmin,gestorePromuoviUtente,gestoreUnpromuoviUtente,connectedUsers,gestoreRegistrazione);
+            CommandHandler commandHandler = new CommandHandler(gestoreLogin, gestoreSendBrodcastMessage,switchChannelChange,listView,gestoreViewUser,gestoreListEUsers,gestoreMessaggiPrivati,gestoreKickCanale,gestoreBanUtente,gestoreUnbanUtente,gestoreFBanUtente,gestoreFunbanUtente,gestoreVisualizzaUtentiAdmin,gestorePromuoviUtente,gestoreUnpromuoviUtente,connectedUsers,gestoreRegistrazione, gestoreDisconnesioneClient);
 
             gestoreAccettazione = new GestoreAccettazione();
             gestioneLetturaClient = new GestioneLetturaClient(gestoreDisconnesioneClient, commandHandler);
