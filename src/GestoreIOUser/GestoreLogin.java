@@ -101,20 +101,13 @@ public class GestoreLogin implements IGestoreLogin {
                 System.out.println("Login riuscito per utente: " + nick);
             }
         } else {
-            //utente non trovato
-            System.out.println("Utente non trovato, creando nuovo utente: " + nick);
-            User newUser = new User(nick, password, "active", "user", client);
-            assignTempIdIfDuplicate(nick, newUser); // ASSEGNA ID TEMPORANEO
-            users.put(newUser.getID(), newUser);
-            GestoreUtenti.saveUsers(users);  // Salva il nuovo utente nel file
-
-            connectedUsers.put(client, newUser);
-            assignToAvailableChannel(newUser, client); // Assegna al canale disponibile
-           // clientWriter.writeToClient(client, "Registration successful. Welcome, " + nick);
-            response.addProperty("status", "success");
-            response.addProperty("message", "Registration successful. Welcome, " + nick);
+            // Utente non trovato
+            System.out.println("Utente non trovato: " + nick);
+            response.addProperty("status", "error");
+            response.addProperty("message", "User not found. Please register or try again.");
             clientWriter.writeToClient(client, response.toString());
-            System.out.println("Registrazione riuscita per utente: " + nick);
+            client.close();
+            System.out.println("Login fallito per utente: " + nick + ". Utente non registrato.");
         }
     }
 

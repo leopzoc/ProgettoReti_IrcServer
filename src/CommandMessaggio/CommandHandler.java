@@ -6,6 +6,7 @@ import GestoreCambioCanale.SwitchChannelChange;
 import GestoreDegliInvii.BroadcastMessage;
 import GestoreDeiBan.GestoreBanUtente;
 import GestoreIOUser.GestoreLogin;
+import GestoreIOUser.GestoreRegistrazione;
 import GestoreIOUser.User;
 import GestoreKick.GestoreKickCanale;
 import GestoreMessaggioPrivato.GestoreMessaggiPrivati;
@@ -29,7 +30,7 @@ public class CommandHandler {
     private final Map<SocketChannel,User> connectedUsers;
 
 
-    public CommandHandler(GestoreLogin gestoreLogin, BroadcastMessage sendMessageBroadcastCommand, SwitchChannelChange swichChannelChange, GestoreListView gestoreListView, GestoreViewUser gestoreViewUser, GestoreListEUsers gestoreListEUser, GestoreMessaggiPrivati gestoreMessaggiPrivati, GestoreKickCanale gestorekickCanale, GestoreBanUtente gestoreBanUtente, GestoreUnbanUtente gestoreUnBan, GestoreFBanUtente gestoreFBanUtente, GestoreFunbanUtente gestoreFunbanUtente, GestoreVisualizzaUtentiAdmin gestoreVisualizzaUtentiAdmin, GestorePromuoviUtente gestorePromuoviUtente, GestoreUnpromuoviUtente gestoreUnpromuoviUtente, Map<SocketChannel, User> connectedUsers) {
+    public CommandHandler(GestoreLogin gestoreLogin, BroadcastMessage sendMessageBroadcastCommand, SwitchChannelChange swichChannelChange, GestoreListView gestoreListView, GestoreViewUser gestoreViewUser, GestoreListEUsers gestoreListEUser, GestoreMessaggiPrivati gestoreMessaggiPrivati, GestoreKickCanale gestorekickCanale, GestoreBanUtente gestoreBanUtente, GestoreUnbanUtente gestoreUnBan, GestoreFBanUtente gestoreFBanUtente, GestoreFunbanUtente gestoreFunbanUtente, GestoreVisualizzaUtentiAdmin gestoreVisualizzaUtentiAdmin, GestorePromuoviUtente gestorePromuoviUtente, GestoreUnpromuoviUtente gestoreUnpromuoviUtente, Map<SocketChannel, User> connectedUsers, GestoreRegistrazione gestoreRegistrazione) {
         // Comandi utente
         this.connectedUsers = connectedUsers;
         commonCommands.put("login", new LoginCommand(gestoreLogin));
@@ -39,6 +40,7 @@ public class CommandHandler {
         commonCommands.put("users", new UsersListCommand(gestoreViewUser));//asincrono
         commonCommands.put("privmsg",new PrivateMessageCommand(gestoreMessaggiPrivati));//asincrono
         commonCommands.put("lu",new ListAndUsersCommand(gestoreListEUser));//asincrono
+        commonCommands.put("register", new CommandRegistrazione(gestoreRegistrazione));
         // Comandi amministrativi
         adminCommands.put("kick", new KickUserCommand(gestorekickCanale));
         adminCommands.put("ban", new BanCommand(gestoreBanUtente));

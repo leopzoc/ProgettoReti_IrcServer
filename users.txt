@@ -1,6 +1,7 @@
 9be22524-a782-4026-90a2-2994d775ab96:bilalhalal::active:user
 0e3168dc-f377-4144-b6ab-c2fedd8f8b66:nickname::active:user
-e5854a88-2194-475f-a550-4ab9ec193b91:leo:4321:active:user
+e5854a88-2194-475f-a550-4ab9ec193b91:leo:4321:banned:user
+2c2cb7a0-7ece-46b3-b29f-7026515aba8a:pasc:123:active:user
 262d3603-f98b-4b70-9962-8ae7457a6fa0:pop:455:active:user
 d79d8c62-c798-48c4-ab07-79e719f34767:leo:1234:active:user
 3b02f717-7114-4be1-a7fd-58e4cd26951c:pascuale:123:active:user
