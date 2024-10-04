@@ -414,7 +414,6 @@ I contributi sono benvenuti. Puoi aprire una pull request o segnalare problemi n
 ## Autori
 
 - **leopzoc** -  (Leonardo Pulzone)
-- **Shooter-24** (Pasquale Mazzocchi)
 
 ---
 
