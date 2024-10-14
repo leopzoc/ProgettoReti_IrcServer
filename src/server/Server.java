@@ -7,6 +7,7 @@ import GestoreBanDefinitivo.GestoreFunbanUtente;
 import GestoreCambioCanale.SwitchChannelChange;
 import GestoreDegliInvii.BroadcastMessage;
 import GestoreDeiBan.GestoreBanUtente;
+import GestoreErrori.GestoreErrore;
 import GestoreIOUser.GestoreLogin;
 import GestoreIOUser.GestoreRegistrazione;
 import GestoreIOUser.GestoreUtenti;
@@ -124,7 +125,8 @@ Valore (Integer): Il valore è un contatore che tiene traccia dell'ultimo ID tem
             GestorePromuoviUtente gestorePromuoviUtente = new GestorePromuoviUtente(connectedUsers,clientWriter,userFilePath);
             GestoreUnpromuoviUtente gestoreUnpromuoviUtente = new GestoreUnpromuoviUtente(connectedUsers,clientWriter,userFilePath);
             GestoreRegistrazione gestoreRegistrazione = new GestoreRegistrazione(connectedUsers,clientWriter,channels,duplicateUsersMap,tempIdCounters);
-            CommandHandler commandHandler = new CommandHandler(gestoreLogin, gestoreSendBrodcastMessage,switchChannelChange,listView,gestoreViewUser,gestoreListEUsers,gestoreMessaggiPrivati,gestoreKickCanale,gestoreBanUtente,gestoreUnbanUtente,gestoreFBanUtente,gestoreFunbanUtente,gestoreVisualizzaUtentiAdmin,gestorePromuoviUtente,gestoreUnpromuoviUtente,connectedUsers,gestoreRegistrazione, gestoreDisconnesioneClient);
+            GestoreErrore gestoreErrore = new GestoreErrore(broadcastExecutor,clientWriter);
+            CommandHandler commandHandler = new CommandHandler(gestoreLogin, gestoreSendBrodcastMessage,switchChannelChange,listView,gestoreViewUser,gestoreListEUsers,gestoreMessaggiPrivati,gestoreKickCanale,gestoreBanUtente,gestoreUnbanUtente,gestoreFBanUtente,gestoreFunbanUtente,gestoreVisualizzaUtentiAdmin,gestorePromuoviUtente,gestoreUnpromuoviUtente,connectedUsers,gestoreRegistrazione, gestoreDisconnesioneClient,gestoreErrore);
 
             gestoreAccettazione = new GestoreAccettazione();
             gestioneLetturaClient = new GestioneLetturaClient(gestoreDisconnesioneClient, commandHandler);

@@ -1,11 +1,13 @@
 package CommandMessaggio;
 
+import Connessione.ClientWriter;
 import Connessione.GestoreDisconnesioneClient;
 import GestoreBanDefinitivo.GestoreFBanUtente;
 import GestoreBanDefinitivo.GestoreFunbanUtente;
 import GestoreCambioCanale.SwitchChannelChange;
 import GestoreDegliInvii.BroadcastMessage;
 import GestoreDeiBan.GestoreBanUtente;
+import GestoreErrori.GestoreErrore;
 import GestoreIOUser.GestoreLogin;
 import GestoreIOUser.GestoreRegistrazione;
 import GestoreIOUser.User;
@@ -15,6 +17,8 @@ import GestorePromozione.GestorePromuoviUtente;
 import GestorePromozione.GestoreUnpromuoviUtente;
 import GestoreViewUser.GestoreViewUser;
 import GestoreVisualizzaUtentiAdmin.GestoreVisualizzaUtentiAdmin;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import gestoreListEUsers.GestoreListEUsers;
 import gestoreListView.GestoreListView;
 import gestoreUnbanUtente.GestoreUnbanUtente;
@@ -29,9 +33,12 @@ public class CommandHandler {
     private final Map<String, Command> commonCommands = new HashMap<>();
     private final Map<String, Command> adminCommands = new HashMap<>();
     private final Map<SocketChannel,User> connectedUsers;
+    private errorCommand errorePermessi;
 
 
-    public CommandHandler(GestoreLogin gestoreLogin, BroadcastMessage sendMessageBroadcastCommand, SwitchChannelChange swichChannelChange, GestoreListView gestoreListView, GestoreViewUser gestoreViewUser, GestoreListEUsers gestoreListEUser, GestoreMessaggiPrivati gestoreMessaggiPrivati, GestoreKickCanale gestorekickCanale, GestoreBanUtente gestoreBanUtente, GestoreUnbanUtente gestoreUnBan, GestoreFBanUtente gestoreFBanUtente, GestoreFunbanUtente gestoreFunbanUtente, GestoreVisualizzaUtentiAdmin gestoreVisualizzaUtentiAdmin, GestorePromuoviUtente gestorePromuoviUtente, GestoreUnpromuoviUtente gestoreUnpromuoviUtente, Map<SocketChannel, User> connectedUsers, GestoreRegistrazione gestoreRegistrazione, GestoreDisconnesioneClient gestoreDisconnesione) {
+
+    public CommandHandler(GestoreLogin gestoreLogin, BroadcastMessage sendMessageBroadcastCommand, SwitchChannelChange swichChannelChange, GestoreListView gestoreListView, GestoreViewUser gestoreViewUser, GestoreListEUsers gestoreListEUser, GestoreMessaggiPrivati gestoreMessaggiPrivati, GestoreKickCanale gestorekickCanale, GestoreBanUtente gestoreBanUtente, GestoreUnbanUtente gestoreUnBan, GestoreFBanUtente gestoreFBanUtente, GestoreFunbanUtente gestoreFunbanUtente, GestoreVisualizzaUtentiAdmin gestoreVisualizzaUtentiAdmin, GestorePromuoviUtente gestorePromuoviUtente, GestoreUnpromuoviUtente gestoreUnpromuoviUtente, Map<SocketChannel, User> connectedUsers, GestoreRegistrazione gestoreRegistrazione, GestoreDisconnesioneClient gestoreDisconnesione, GestoreErrore gestoreErrore) {
+        this.errorePermessi = new errorCommand(gestoreErrore);
         // Comandi utente
         this.connectedUsers = connectedUsers;
         commonCommands.put("login", new LoginCommand(gestoreLogin));
@@ -68,6 +75,14 @@ public class CommandHandler {
                 adminCommands.get(command).execute(client, message);
             } else {
                 System.out.println(client  + user.getID() + "accesso negato al comando "+ command);
+                // Creazione e serializzazione dell'oggetto di errore JSON
+                JsonObject errore = new JsonObject();
+                errore.addProperty("status", "error");
+                errore.addProperty("message", "Server: you don't have permission to access this command");
+                String errMessage = errore.toString(); // Usa toString per serializzare correttamente in JSON
+                errorePermessi.execute(client, errMessage);
+
+
             }
         } else {
             System.out.println("Unknown command: " + command + client + user.getID());
