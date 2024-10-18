@@ -74,6 +74,7 @@ public class GestoreMessaggiPrivati implements IGestoreMessaggiPrivati {
                     //fai notare al utente che il msg è privato
                     contenutoMessaggio = " [privato] " + contenutoMessaggio;
                     risposta.addProperty("sender", senderNick);
+                    risposta.addProperty("type", "private");
                     risposta.addProperty("message", contenutoMessaggio);
                     //invia
                     clientWriter.writeToClient(userDestinatario.getSocketChannel(), risposta.toString());

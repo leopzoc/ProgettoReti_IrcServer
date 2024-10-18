@@ -81,6 +81,8 @@ public class BroadcastMessage implements IBroadcastMessage {
                                     // Creazione del JSON di risposta
                                     JsonObject jsonResponse = new JsonObject();
                                     jsonResponse.addProperty("sender", senderNick);
+                                    jsonResponse.addProperty("channel",channelName);
+                                    jsonResponse.addProperty("type", "broadcast");
                                     jsonResponse.addProperty("message", message);
 
                                     String jsonResponseString = jsonResponse.toString();
