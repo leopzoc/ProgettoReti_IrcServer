@@ -93,10 +93,14 @@ public class GestoreLogin implements IGestoreLogin {
                 matchingUser.setSocketChannel(client);
                 assignTempIdIfDuplicate(nick, matchingUser); // ASSEGNA ID TEMPORANEO
                 connectedUsers.put(client, matchingUser);
-                assignToAvailableChannel(matchingUser, client); // Assegna al canale disponibile
+                String channel;
+                channel = assignToAvailableChannel(matchingUser, client); // Assegna al canale disponibile
                 //clientWriter.writeToClient(client, "Login successful. Welcome, " + nick);
                 response.addProperty("status", "success");
-                response.addProperty("message", "Login successful. Welcome, " + nick);
+                // Notifica al client a quale canale è stato assegnato
+                response.addProperty("message", "Login successful. Welcome, " + nick + "You have been assigned to channel: " + channel + "your role is "+ matchingUser.getRole());
+
+
                 clientWriter.writeToClient(client, response.toString());
                 System.out.println("Login riuscito per utente: " + nick);
             }
@@ -111,7 +115,7 @@ public class GestoreLogin implements IGestoreLogin {
         }
     }
 
-    private void assignToAvailableChannel(User user, SocketChannel client) throws IOException {
+    private String assignToAvailableChannel(User user, SocketChannel client) throws IOException {
         // Ottieni il primo canale creato
         String firstChannel = channels.keySet().iterator().next();
 
@@ -119,11 +123,7 @@ public class GestoreLogin implements IGestoreLogin {
         channels.get(firstChannel).add(client);
         user.setChannel(firstChannel);
 
-        // Notifica al client a quale canale è stato assegnato
-        JsonObject channelResponse = new JsonObject();
-        channelResponse.addProperty("status", "success");
-        channelResponse.addProperty("message", "You have been assigned to channel: " + firstChannel);
-        clientWriter.writeToClient(client, channelResponse.toString());
+    return firstChannel;
 
         //vecchio metodo
         // Notifica al client a quale canale è stato assegnato

@@ -66,26 +66,35 @@ public class CommandHandler {
     public void handleCommand(String command, SocketChannel client, String message) {
         // Gestione dei comandi comuni
         User user = connectedUsers.get(client);
-        if (commonCommands.containsKey(command)) {
-            commonCommands.get(command).execute(client, message);
-        }
-        // Gestione dei comandi amministrativi
-        else if (adminCommands.containsKey(command)) {
-            if (user != null && user.getRole().equals("admin")) {
-                adminCommands.get(command).execute(client, message);
-            } else {
-                System.out.println(client  + user.getID() + "accesso negato al comando "+ command);
-                // Creazione e serializzazione dell'oggetto di errore JSON
-                JsonObject errore = new JsonObject();
-                errore.addProperty("status", "error");
-                errore.addProperty("message", "Server: you don't have permission to access this command");
-                String errMessage = errore.toString(); // Usa toString per serializzare correttamente in JSON
-                errorePermessi.execute(client, errMessage);
-
-
+        if (user != null || (command.equalsIgnoreCase("login") || command.equalsIgnoreCase("register"))) {
+            if (commonCommands.containsKey(command)) {
+                commonCommands.get(command).execute(client, message);
             }
-        } else {
-            System.out.println("Unknown command: " + command + client + user.getID());
+            // Gestione dei comandi amministrativi
+            else if (adminCommands.containsKey(command)) {
+                if (user.getRole().equals("admin")) {
+                    adminCommands.get(command).execute(client, message);
+                } else {
+                    System.out.println(client + user.getID() + "accesso negato al comando " + command);
+                    // Creazione e serializzazione dell'oggetto di errore JSON
+                    JsonObject errore = new JsonObject();
+                    errore.addProperty("status", "error");
+                    errore.addProperty("message", "Server: you don't have permission to access this command");
+                    String errMessage = errore.toString(); // Usa toString per serializzare correttamente in JSON
+                    errorePermessi.execute(client, errMessage);
+
+
+                }
+            } else {
+                System.out.println("Unknown command: " + command + client + user.getID());
+            }
+        }
+        else{
+            JsonObject errore = new JsonObject();
+            errore.addProperty("status", "error");
+            errore.addProperty("message", "Server: you don't have permission to access this command");
+            String errMessage = errore.toString(); // Usa toString per serializzare correttamente in JSON
+            errorePermessi.execute(client, errMessage);
         }
     }
 }
