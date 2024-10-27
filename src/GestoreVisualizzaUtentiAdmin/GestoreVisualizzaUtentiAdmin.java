@@ -35,6 +35,7 @@ public class GestoreVisualizzaUtentiAdmin {
                 userJson.addProperty("uuid", user.getID());
                 userJson.addProperty("nick", user.getNick());
                 userJson.addProperty("status", user.getStatus());
+                userJson.addProperty("role", user.getRole());
 
                 // Verifica se l'utente è connesso
                 boolean isOnline = connectedUsers.values().stream().anyMatch(u -> u.getID().equals(user.getID()));

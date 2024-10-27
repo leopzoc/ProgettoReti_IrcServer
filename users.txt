@@ -11,6 +11,8 @@ dd050b7c-140d-4354-83ad-dafafb1191ca:leo:222:active:user
 5a22172e-5656-4b15-9f15-486007cc27d5:cacone:gigione:active:user
 580bce29-74ae-413b-91f3-301eb04ca758:leo:111:active:user
 6b25f9ac-291c-4b56-b475-fd212d8fbadc:lello:123:active:user
+a8d86c6c-9399-4867-b7f2-20274330ef47:leonardo:123:active:user
+70b5fd6f-3678-4ca7-9304-907b395ec691:ac:12:active:user
 31d111d2-ee6b-4250-8c03-b88cf0d29c0b:leo:6789:banned:user
 c9364815-6c7f-4e2c-843e-acb6573a804d:leo:123:active:user
 34b2d67b-9dd3-427f-b74b-925d9dcfec65:gg:12:active:user
@@ -25,5 +27,7 @@ ce49323f-a13e-41ec-8cd0-7164f53fa10b:gigo:admin:active:user
 ef547af8-38ac-422d-b453-678115b7587c:tonino:leo:active:user
 4a992846-1fd5-4cdd-b0c7-16d4cdadb59f:user:password:active:user
 52a9f4bb-56a7-4406-aded-fbed3f149308:gio:pizzi:active:user
+82d8adca-f262-40ac-9f2b-fff3d91276e5:caccone:123:active:user
+e46ebb7e-5135-4a2e-97df-005bf2b0fc2b:umer:123:active:user
 ea2c8f46-5898-4972-8660-005b3c8e5b24:leo:54:active:user
-35de33e4-c878-4b3d-9657-971bb204db0b:leo:12345:active:user
+35de33e4-c878-4b3d-9657-971bb204db0b:umer:12345:active:admin

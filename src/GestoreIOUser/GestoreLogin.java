@@ -97,11 +97,11 @@ public class GestoreLogin implements IGestoreLogin {
                 channel = assignToAvailableChannel(matchingUser, client); // Assegna al canale disponibile
                 //clientWriter.writeToClient(client, "Login successful. Welcome, " + nick);
                 response.addProperty("status", "success");
-                // Notifica al client a quale canale è stato assegnato
-                response.addProperty("message", "Login successful. Welcome, " + nick + "You have been assigned to channel: " + channel + "your role is "+ matchingUser.getRole());
-
+                response.addProperty("message", "Login successful. Welcome, " + nick + ". You have been assigned to channel: " + channel);
+                response.addProperty("role", matchingUser.getRole());
 
                 clientWriter.writeToClient(client, response.toString());
+
                 System.out.println("Login riuscito per utente: " + nick);
             }
         } else {

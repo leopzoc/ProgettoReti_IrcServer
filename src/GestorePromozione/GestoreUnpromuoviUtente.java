@@ -65,7 +65,7 @@ public class GestoreUnpromuoviUtente {
                 // Se l'utente è connesso, notificalo della rimozione dei privilegi
                 if (connectedUsers.containsValue(userDaUnpromuovere)) {
                     JsonObject notifyMessage = new JsonObject();
-                    notifyMessage.addProperty("status", "success");
+                    notifyMessage.addProperty("status", "demote");
                     notifyMessage.addProperty("message", "I tuoi privilegi di admin sono stati rimossi.");
                     clientWriter.writeToClient(userDaUnpromuovere.getSocketChannel(), notifyMessage.toString());
                 }
